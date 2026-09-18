@@ -21,9 +21,9 @@ function harness(saved, failStorage=false){
   function element(id){
     if(!elements.has(id))elements.set(id,{
       value:id==='libraryKind'?'repo':id==='timeSlider'?'100':'',checked:id==='showFiles',textContent:id==='projectSeed'?seedText:'',options:[],
-      classList:{add(){},remove(){},toggle(){}},style:{},focus(){},select(){},click(){this.onclick?.();},
+      classList:{add(){},remove(){},toggle(){}},style:{},focus(){},select(){},click(){this.onclick?.();},setAttribute(k,v){this[k]=v;},setPointerCapture(){},hasPointerCapture(){return true;},releasePointerCapture(){},
       showModal(){},close(){},getBoundingClientRect(){return {width:1000,height:700,left:0,top:0};},
-      getContext(){return new Proxy({},{get(){return ()=>{};},set(){return true;}});},addEventListener(){},
+      getContext(){return new Proxy({measureText(text){return {width:text.length*6};}},{get(target,key){return target[key]||(()=>{});},set(){return true;}});},addEventListener(){},
       set innerHTML(value){this.html=value;this.options=[...value.matchAll(/<option value="([^"]*)"/g)].map(m=>({value:m[1]}));},
       get innerHTML(){return this.html||'';}
     });
@@ -49,9 +49,32 @@ assert.equal(fresh.run('graphEdges.filter(e=>nodesById.get(e.a).kind==="file"||n
 assert(fresh.run('graphNodes.every(n=>/^#([a-f0-9]{6})$/i.test(nodeColor(n,false)))'));
 assert(!source.includes('hsl('),'Graph must be grayscale, including node labels and edges');
 for(let i=0;i<180;i++)fresh.run('loop()');
-fresh.run('fitTarget(true)');
+fresh.run('fitTarget();draw()');
 assert(fresh.run('graphNodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y))'));
 assert(fresh.run('graphNodes.every(n=>n.x*view.k+width/2+view.x>=0&&n.x*view.k+width/2+view.x<=width)'));
+assert(fresh.run('graphNodes.every(n=>Math.hypot(n.wx,n.wy,n.wz)<=GLOBE_RADIUS+1e-8)'),'Every node belongs to the same globe');
+fresh.run('var beforeRotation=graphNodes.map(n=>({id:n.id,x:n.x,y:n.y,z:n.z}));rotateGlobe(.5,.3);draw()');
+assert(fresh.run('graphNodes.every((n,i)=>Math.abs(Math.hypot(n.x,n.y,n.z)-Math.hypot(beforeRotation[i].x,beforeRotation[i].y,beforeRotation[i].z))<1e-7)'),'Rotation must preserve spherical geometry');
+assert(fresh.run('graphNodes.some((n,i)=>Math.abs(n.x-beforeRotation[i].x)>1)'));
+fresh.run('selected=graphNodes.find(n=>n.kind==="repo").id;flyTo(selected)');
+for(let i=0;i<100;i++)fresh.run('loop()');
+assert(fresh.run('nodesById.get(selected).z>Math.hypot(nodesById.get(selected).wx,nodesById.get(selected).wy,nodesById.get(selected).wz)*.999'),'Selection must rotate to the front');
+fresh.element('spin').onclick();
+assert.equal(fresh.run('spinning'),true);
+fresh.element('spin').onclick();
+assert.equal(fresh.run('spinning'),false);
+fresh.run('var originalRotation=JSON.stringify(rotation)');
+fresh.element('graph').onpointerdown({clientX:500,clientY:350,pointerId:1,button:0});
+fresh.element('graph').onpointermove({clientX:560,clientY:380,pointerId:1});
+fresh.element('graph').onpointerup({pointerId:1});
+assert(fresh.run('JSON.stringify(rotation)!==originalRotation'),'Dragging must rotate the globe');
+fresh.run('var zoomBeforePinch=view.k');
+fresh.element('graph').onpointerdown({clientX:400,clientY:350,pointerId:2,button:0});
+fresh.element('graph').onpointerdown({clientX:600,clientY:350,pointerId:3,button:0});
+fresh.element('graph').onpointermove({clientX:700,clientY:350,pointerId:3});
+assert(fresh.run('view.k>zoomBeforePinch'),'Pinching must zoom');
+fresh.element('graph').onpointerup({pointerId:2});fresh.element('graph').onpointerup({pointerId:3});
+assert.equal(fresh.run('pointers.size'),0);
 assert(fresh.persisted());
 fresh.element('showFiles').checked=false;fresh.run('graph()');
 assert.equal(fresh.run('graphNodes.filter(n=>n.kind==="file").length'),0);
@@ -93,4 +116,4 @@ await fresh.run('syncGithub("arnaut560000")');
 assert.equal(fresh.run('db.notes.find(n=>n.kind==="repo").body'),'Keep annotation after sync');
 assert.equal(fresh.run('db.notes.find(n=>n.kind==="repo").files[0].path'),'new-source.js');
 assert.equal(fresh.run('db.notes.find(n=>n.kind==="repo").readme'),'# Updated README');
-console.log('PASS: 15 projects, 632 paths, grayscale theme, graph layout, migration, persistence, file loading, refresh, and storage failure handling.');
+console.log('PASS: 15 projects, 632 paths, monochrome globe, 3D rotation, selection, touch zoom, auto-rotate, migration, persistence, file loading, refresh, and storage failure handling.');

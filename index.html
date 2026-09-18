@@ -13,6 +13,8 @@
 .workspace{display:flex;flex-direction:column;position:relative;min-width:0;min-height:0;overflow:hidden}.topbar{height:45px;min-height:45px;border-bottom:1px solid #2b2b2b;background:#232323;display:flex;align-items:center;gap:12px;padding:0 16px}.topbar h1{margin:0;font-size:13px;font-weight:400}.topbar .pill{display:none}.topbar select{font-size:12px;border:0;background:transparent}.topbar button{font-size:12px;min-height:28px;padding:3px 8px}.file-switch{font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap}.file-switch input{min-height:0;accent-color:#bbb}.graph-area{position:relative;flex:1;min-height:220px;background:#1e1e1e}#graph{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.graph-heading{position:absolute;top:12px;left:0;right:0;text-align:center;pointer-events:none;font-size:12px;color:#999}.graph-tools{position:absolute;right:16px;bottom:15px;display:flex;gap:3px;background:#232323;border:1px solid #333;border-radius:4px;padding:2px}.graph-tools button{border:0;color:#aaa;min-height:28px;padding:3px 9px}.graph-foot{border-top:1px solid #2b2b2b;display:flex;justify-content:space-between;gap:10px;padding:6px 14px;font-size:12px;color:#888}#status{padding:5px 14px;color:#a0a0a0;font-size:12px;border-top:1px solid #2b2b2b;background:#202020}#status.error{color:#fff;background:#3b3b3b}#tooltip{position:absolute;pointer-events:none;padding:5px 8px;background:#333;border:1px solid #555;border-radius:3px;font-size:12px;max-width:280px;overflow-wrap:anywhere}.inspector{display:none;overflow:auto;min-width:0;background:#242424;border-left:1px solid #353535}.details-open .inspector{display:block}.inspector-head{height:45px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #333}.inspector-head button{border:0;font-size:20px;line-height:1}.inspector-body{padding:20px}.inspector-body h2{font-size:22px;font-weight:500;line-height:1.35;overflow-wrap:anywhere;margin:14px 0}.field{margin:14px 0}.field input,.field textarea{display:block;width:100%;margin-top:5px}.field textarea{resize:vertical;min-height:240px;font:14px/1.7 ui-monospace,monospace}.chips{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0}.chip{font-size:12px;border:1px solid #414141;color:#bbb;padding:2px 6px;border-radius:3px}.divider{border-top:1px solid #3a3a3a;margin:20px 0 14px}.reading{font-size:16px;line-height:1.75;overflow-wrap:anywhere}.reading h1,.reading h2,.reading h3{font-size:1.15em;margin:16px 0 8px}.reading p{margin:8px 0}.reading pre{overflow:auto;background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:12px;font:13px/1.6 ui-monospace,monospace;white-space:pre}.reading code{font-family:ui-monospace,monospace;background:#1b1b1b}.reading .wiki{border:0;border-radius:0;background:none;color:#ddd;padding:0;min-height:0;text-decoration:underline}.reading blockquote{border-left:2px solid #888;color:#aaa;margin:8px 0;padding-left:12px}.link-button{display:block;text-align:left;width:100%;margin:5px 0;overflow-wrap:anywhere}.empty{padding:18px 10px;color:#999;font-size:13px}dialog{background:#262626;color:#ddd;border:1px solid #555;border-radius:6px;padding:24px;width:min(460px,calc(100vw - 30px));box-shadow:0 20px 80px #0008}dialog::backdrop{background:#0009}dialog h2{font-size:21px;font-weight:500;margin-bottom:12px}dialog input{width:100%;margin:8px 0 16px}dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:5px}::-webkit-scrollbar-track{background:transparent}
 @media(max-width:1100px){.app{grid-template-columns:38px 230px minmax(0,1fr)}.app.details-open{grid-template-columns:38px 230px minmax(0,1fr)}.details-open .workspace{display:none}}@media(max-width:620px){.app,.app.details-open{grid-template-columns:34px minmax(0,1fr);grid-template-rows:230px minmax(400px,1fr);height:auto;min-height:100dvh}.rail{grid-column:1;grid-row:1/3}.sidebar{grid-column:2;grid-row:1}.brand{height:35px;flex-shrink:0}.side-controls{padding:6px 10px}.side-controls>.row{display:none}.side-bottom{padding:5px 10px}.side-bottom>.primary,.storage{display:none}.side-bottom .row{display:flex}.section-label{padding-bottom:3px}#noteList{min-height:40px}.workspace,.inspector{grid-column:2;grid-row:2;height:calc(100dvh - 230px);min-height:400px}.topbar{gap:4px;padding:0 8px;flex-wrap:wrap;height:auto;min-height:65px}.topbar h1{margin-right:10px}.topbar .grow{display:none}.topbar select{max-width:150px}.graph-foot span:first-child{display:none}.graph-tools{right:8px;bottom:8px}}
 .legend{position:absolute;left:14px;bottom:15px;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:46%;pointer-events:none;font-size:11px;color:#9a9a9a}.legend span{display:flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border-radius:50%;display:block}.timeline{position:absolute;left:14px;top:12px;display:flex;align-items:center;gap:9px;background:#232323cc;border:1px solid #333;border-radius:4px;padding:5px 10px;font-size:11px;color:#9a9a9a}.timeline input{width:150px;min-height:0;accent-color:#9a9a9a;background:none;border:0;padding:0}#graph:focus-visible{outline:1px solid #555;outline-offset:-1px}@media(max-width:1100px){.legend{max-width:60%;bottom:44px}.timeline input{width:104px}}
+::selection{background:#505050;color:#fff}
+@media(max-width:1100px){.graph-heading{top:45px;left:14px;right:14px;text-align:left}}
 </style>
 </head>
 <body>
@@ -33,17 +35,17 @@
     </div>
   </aside>
   <main class="workspace">
-    <header class="topbar"><h1>◉ &nbsp; Graph view</h1><span class="pill">LOCAL</span><span class="grow"></span><select id="scope" aria-label="Graph scope"><option value="all">Whole brain</option><option value="local">Selected + connections</option></select><label class="file-switch"><input type="checkbox" id="showFiles" checked>Files</label><button id="githubTop" title="Sync public repositories">↻ Sync</button></header>
+    <header class="topbar"><h1>◎ &nbsp; Knowledge globe</h1><span class="pill">LOCAL</span><span class="grow"></span><select id="scope" aria-label="Graph scope"><option value="all">Whole brain</option><option value="local">Selected + connections</option></select><label class="file-switch"><input type="checkbox" id="showFiles" checked>Files</label><button id="githubTop" title="Sync public repositories">↻ Sync</button></header>
     <div class="graph-area" id="graphArea">
-      <canvas id="graph" tabindex="0" role="img" aria-label="Interactive knowledge graph. Arrow keys pan, + and - zoom, F fits, Enter opens the focused node. Notes can also be opened from the library on the left."></canvas>
+      <canvas id="graph" tabindex="0" role="img" aria-label="Interactive knowledge graph. Drag or use arrow keys to rotate the globe, + and - zoom, F fits, Enter opens the focused node. Notes can also be opened from the library on the left."></canvas>
       <div class="graph-heading"><span id="graphCount"></span></div>
-      <div class="graph-tools"><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">＋</button><button id="fit">Fit graph</button></div>
+      <div class="graph-tools"><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">＋</button><button id="spin" aria-pressed="false">Auto-rotate</button><button id="fit">Fit globe</button></div>
       <div class="legend" id="legend" aria-hidden="true"></div>
       <div class="timeline" id="timeline" hidden><input id="timeSlider" type="range" min="0" max="100" value="100" step="1" aria-label="Show projects last updated up to this date"><span id="timeLabel"></span></div>
       <div id="tooltip" hidden></div>
     </div>
     <div id="status" role="status" aria-live="polite">Connect your public repositories, or start with a note.</div>
-    <footer class="graph-foot"><span>Drag to explore · scroll or pinch to zoom · zoom in for folders and files</span><span id="account">@arnaut560000</span></footer>
+    <footer class="graph-foot"><span>Drag to rotate · scroll or pinch to zoom · click a node to open</span><span id="account">@arnaut560000</span></footer>
   </main>
   <aside class="inspector" aria-label="Selected note"><div class="inspector-head"><span class="eyebrow">Note details</span><button id="back" aria-label="Close details">×</button></div><div class="inspector-body" id="detail"></div></aside>
 </div>
@@ -126,7 +128,7 @@ function detail(){const n=note();const el=$('detail');if(!n){const node=nodesByI
 }
 function refresh(){indexFiles();filters();list();graph();detail();$('account').textContent='@'+(db.user||'arnaut560000');}
 function newNote(title){const base=title||'Untitled note';let t=base,i=2;while(target(t))t=base+' '+i++;const n={id:uid(),title:t,folder:'Inbox',tags:[],kind:'note',body:''};db.notes.unshift(n);selected=n.id;$('libraryKind').value='note';query='';$('search').value='';$('folder').value='';$('tag').value='';editing=true;save();refresh();$('app').classList.add('details-open');$('editTitle')?.focus();$('editTitle')?.select();}
-let autoFit=true, graphSignature='', timeCut=Infinity, matched=null, hot=0, camAnim=false;
+let autoFit=true, graphSignature='', timeCut=Infinity, matched=null;
 const GOLD=2.39996;
 const LANG_HUE={Python:205,JavaScript:48,TypeScript:215,PHP:268,HTML:18,CSS:190,SCSS:195,Java:28,Kotlin:280,'C#':155,'C++':232,C:225,Go:185,Rust:14,Ruby:352,Swift:22,Dart:196,Shell:125,PowerShell:212,Vue:150,Svelte:10,R:208,Lua:240};
 function hueOf(name){if(!name)return null;if(LANG_HUE[name]!=null)return LANG_HUE[name];let h=7;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))%360;return h;}
@@ -201,29 +203,11 @@ function graph(){
   }
   for(const n of graphNodes)if(n.kind==='dir'||n.kind==='file'){const r=nodesById.get(n.repo||n.parent);n.hue=r?r.hue:null;n.time=r?r.time:null;}
   for(const n of graphNodes)n.lod=n.kind==='file'?2:n.kind==='dir'?1:0;
-  // layout: hubs float, districts and files orbit their project
-  const hubs=graphNodes.filter(n=>n.lod===0);
-  let index=0;
-  for(const n of hubs){const i=index++,angle=i*GOLD,r=80+Math.sqrt(i)*160,saved=positions.get(n.id);n.x=saved?saved.x:Math.cos(angle)*r;n.y=saved?saved.y:Math.sin(angle)*r;n.vx=0;n.vy=0;n.spread=n.kind==='repo'?72:34;}
-  const byRepo=new Map();
-  for(const f of files){if(!byRepo.has(f.repo))byRepo.set(f.repo,{loose:[],dirs:new Map()});const g=byRepo.get(f.repo);if(f.dir){if(!g.dirs.has(f.dir))g.dirs.set(f.dir,[]);g.dirs.get(f.dir).push(f);}else g.loose.push(f);}
-  for(const [repoId,group] of byRepo){
-    const hub=nodesById.get(repoId);if(!hub)continue;let reach=40;
-    group.loose.forEach((f,i)=>{const a=i*GOLD,r=18+Math.sqrt(i)*7;f.ox=Math.cos(a)*r;f.oy=Math.sin(a)*r;reach=Math.max(reach,r+10);});
-    [...group.dirs.keys()].sort().forEach((dirId,i)=>{
-      const d=nodesById.get(dirId),kids=group.dirs.get(dirId),a=i*GOLD,R=62+Math.sqrt(i)*30;
-      d.ox=Math.cos(a)*R;d.oy=Math.sin(a)*R;
-      let ring=0;
-      kids.forEach((f,j)=>{const b=j*GOLD,r=11+Math.sqrt(j)*7;f.ox=d.ox+Math.cos(b)*r;f.oy=d.oy+Math.sin(b)*r;ring=Math.max(ring,r);});
-      reach=Math.max(reach,R+ring+14);
-    });
-    hub.spread=Math.max(72,reach);
-  }
-  for(const n of graphNodes)if(n.lod>0){const hub=nodesById.get(n.repo||n.parent);if(hub){n.x=hub.x+(n.ox||0);n.y=hub.y+(n.oy||0);}n.satellite=true;}
+  layoutGlobe();
   for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);if(a&&b&&!e.tree){a.degree=(a.degree||0)+1;b.degree=(b.degree||0)+1;}}
   for(const n of graphNodes)n.r=n.kind==='file'?2:n.kind==='dir'?3.4:n.kind==='repo'?6+Math.min(6,Math.sqrt(n.degree||0)*.5):n.kind==='stack'?4.5+Math.min(4,Math.sqrt(n.degree||0)*.5):n.kind==='tag'?5:4.5;
   const signature=graphNodes.map(n=>n.id).join('|');
-  if(signature!==graphSignature){if(!positions.size)autoFit=true;graphSignature=signature;}
+  if(signature!==graphSignature){autoFit=true;graphSignature=signature;}
   legend();applyTime(true);markQuery(true);
   $('graphCount').textContent=db.notes.filter(n=>n.kind==='repo').length+' projects · '+graphNodes.length+' nodes · '+graphEdges.length+' connections';
   startPhysics();
@@ -254,191 +238,60 @@ function alphaOf(n){
   if(matched&&!matched.has(n.id))return .13;
   return 1;
 }
-const canvas=$('graph'),ctx=canvas.getContext('2d');let drag=null,hover=null,pointers=new Map(),pinch=null;
-let camTarget=null;
-function resize(){const rect=$('graphArea').getBoundingClientRect();width=rect.width;height=rect.height;const dpr=devicePixelRatio||1;canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(autoFit)fitTarget(true);draw();}
+
+// One shared 3D sphere. Graph edges retain their actual repository relationships.
+const GLOBE_RADIUS=300;
+function normalizeQuaternion(q){const length=Math.hypot(q.x,q.y,q.z,q.w)||1;return {x:q.x/length,y:q.y/length,z:q.z/length,w:q.w/length};}
+function multiplyQuaternion(a,b){return normalizeQuaternion({w:a.w*b.w-a.x*b.x-a.y*b.y-a.z*b.z,x:a.w*b.x+a.x*b.w+a.y*b.z-a.z*b.y,y:a.w*b.y-a.x*b.z+a.y*b.w+a.z*b.x,z:a.w*b.z+a.x*b.y-a.y*b.x+a.z*b.w});}
+const savedRotation=db.globeRotation;
+let rotation=savedRotation&&['x','y','z','w'].every(k=>Number.isFinite(savedRotation[k]))&&Math.hypot(savedRotation.x,savedRotation.y,savedRotation.z,savedRotation.w)>.001?normalizeQuaternion(savedRotation):{x:0,y:0,z:0,w:1};
+let rotationTarget=null,velocity={x:0,y:0},spinning=false,lastTime=0;
+function hashCoordinate(text){let value=2166136261;for(let i=0;i<text.length;i++){value^=text.charCodeAt(i);value=Math.imul(value,16777619);}value^=value>>>16;value=Math.imul(value,0x7feb352d);value^=value>>>15;return (value>>>0)/4294967296;}
+function layoutGlobe(){for(const n of graphNodes){const z=hashCoordinate(n.id+':latitude')*2-1,angle=hashCoordinate(n.id+':longitude')*Math.PI*2,r=GLOBE_RADIUS*(n.kind==='file'?1:n.kind==='dir'?.95:n.kind==='repo'?.86:.78),ring=Math.sqrt(1-z*z);n.wx=Math.cos(angle)*ring*r;n.wy=Math.sin(angle)*ring*r;n.wz=z*r;}}
+function rotatePoint(point,q=rotation){const tx=2*(q.y*point.wz-q.z*point.wy),ty=2*(q.z*point.wx-q.x*point.wz),tz=2*(q.x*point.wy-q.y*point.wx);return {x:point.wx+q.w*tx+q.y*tz-q.z*ty,y:point.wy+q.w*ty+q.z*tx-q.x*tz,z:point.wz+q.w*tz+q.x*ty-q.y*tx};}
+function rotateGlobe(dx,dy){const yaw={x:0,y:Math.sin(dx/2),z:0,w:Math.cos(dx/2)},pitch={x:Math.sin(dy/2),y:0,z:0,w:Math.cos(dy/2)};rotation=multiplyQuaternion(pitch,multiplyQuaternion(yaw,rotation));}
+const canvas=$('graph'),ctx=canvas.getContext('2d');
+let drag=null,hover=null,pointers=new Map(),pinch=null,saveRotationTimer=0;
+function persistRotation(){clearTimeout(saveRotationTimer);saveRotationTimer=setTimeout(()=>{db.globeRotation={...rotation};save();},350);}
+function fitTarget(){if(!width||!height)return;view.k=Math.max(.08,Math.min(width-60,height-100)/(GLOBE_RADIUS*2));view.x=0;view.y=10;}
+function resize(){const rect=$('graphArea').getBoundingClientRect();width=rect.width;height=rect.height;const dpr=devicePixelRatio||1;canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(autoFit)fitTarget();draw();}
 new ResizeObserver(resize).observe($('graphArea'));
-function shown(n){return n.lod<=lodFor(view.k);}
+function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));n.sx=width/2+view.x+n.x*view.k;n.sy=height/2+view.y+n.y*view.k;n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.6:n.kind==='dir'?2.2:n.kind==='repo'?4.5:3)*(.55+.45*n.depth)*Math.max(.75,Math.sqrt(view.k));}}
 function draw(){
-  ctx.clearRect(0,0,width,height);
-  ctx.save();ctx.translate(width/2+view.x,height/2+view.y);ctx.scale(view.k,view.k);
-  const level=lodFor(view.k);
-  const m=120/view.k,x0=(-width/2-view.x)/view.k-m,x1=(width/2-view.x)/view.k+m,y0=(-height/2-view.y)/view.k-m,y1=(height/2-view.y)/view.k+m;
-  const onscreen=n=>n.x>x0&&n.x<x1&&n.y>y0&&n.y<y1;
-  ctx.lineWidth=.6/view.k;
-  for(const e of graphEdges){
-    const a=nodesById.get(e.a),b=nodesById.get(e.b);if(!a||!b||a.lod>level||b.lod>level)continue;
-    if(!onscreen(a)&&!onscreen(b))continue;
-    const live=e.a===selected||e.b===selected;
-    ctx.globalAlpha=Math.min(alphaOf(a),alphaOf(b))*(live?1:e.tree?.5:.75);
-    ctx.strokeStyle=live?'#ffffff66':e.tree?'#ffffff20':'#ffffff1c';
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
-  }
-  const candidates=[];
-  for(const n of graphNodes){
-    if(n.lod>level)continue;
-    const active=n.id===selected||n.id===hover;
-    if(!active&&!onscreen(n)&&!(n.kind==='repo'&&view.k<1.2))continue;
-    ctx.globalAlpha=active?1:alphaOf(n);
-    if(active){ctx.beginPath();ctx.strokeStyle='#ffffff88';ctx.lineWidth=1/view.k;ctx.arc(n.x,n.y,n.r+4/view.k,0,Math.PI*2);ctx.stroke();}
-    ctx.fillStyle=nodeColor(n,active);
-    ctx.beginPath();ctx.arc(n.x,n.y,Math.max(n.r,(n.kind==='file'?1:3)/view.k),0,Math.PI*2);ctx.fill();
-    if(alphaOf(n)>.2)candidates.push({n,active});
-  }
-  ctx.globalAlpha=1;
-  // labels: repos first, then hovered/selected, then folders/tags/tools once there's room — never drawn on top of one another
-  candidates.sort((x,y)=>{
-    if(x.active!==y.active)return x.active?-1:1;
-    const rank=k=>k==='repo'?3:(k==='tag'||k==='stack')?2:k==='dir'?1:0;
-    const rx=rank(x.n.kind),ry=rank(y.n.kind);
-    if(rx!==ry)return ry-rx;
-    return (y.n.degree||y.n.r||0)-(x.n.degree||x.n.r||0);
-  });
-  const taken=[];
-  const NUDGE=[0,15,-15,30,-30,45,-45,60,-60];
-  for(const {n,active} of candidates){
-    const wants=active||n.kind==='repo'||(n.kind==='dir'&&view.k>.7)||(n.kind==='file'&&view.k>1.6)||((n.kind==='tag'||n.kind==='stack')&&view.k>.55);
-    if(!wants)continue;
-    const title=n.kind==='file'?(n.path||n.title).split('/').pop():n.kind==='dir'?n.title.split('/').pop():n.title;
-    const text=title.length>32?title.slice(0,30)+'…':title;
-    const sx=width/2+view.x+n.x*view.k,baseSy=height/2+view.y+(n.y+n.r)*view.k+16;
-    const w=text.length*6.4+10,h=15,mustShow=active||n.kind==='repo';
-    const tries=mustShow?NUDGE:[0];
-    let offset=null;
-    for(const off of tries){
-      const box={x1:sx-w/2,x2:sx+w/2,y1:baseSy+off-h/2,y2:baseSy+off+h/2};
-      if(!taken.some(t=>box.x1<t.x2&&box.x2>t.x1&&box.y1<t.y2&&box.y2>t.y1)){taken.push(box);offset=off;break;}
-    }
-    if(offset==null){
-      if(!mustShow)continue;
-      offset=tries[tries.length-1];
-      taken.push({x1:sx-w/2,x2:sx+w/2,y1:baseSy+offset-h/2,y2:baseSy+offset+h/2});
-    }
-    ctx.font=(active?'500 ':'')+12/view.k+'px system-ui';ctx.textAlign='center';
-    ctx.fillStyle=active?'#ffffff':'#a6a6a6';
-    ctx.fillText(text,n.x,n.y+n.r+16/view.k+offset/view.k);
-  }
-  ctx.globalAlpha=1;ctx.restore();
-  if(!graphNodes.length){ctx.fillStyle='#999';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No matching notes or projects.',width/2,height/2);}
+  ctx.clearRect(0,0,width,height);projectGlobe();
+  if(!graphNodes.length){ctx.fillStyle='#999';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No matching notes or projects.',width/2,height/2);return;}
+  ctx.strokeStyle='#ffffff09';ctx.lineWidth=1;ctx.beginPath();ctx.arc(width/2+view.x,height/2+view.y,GLOBE_RADIUS*view.k,0,Math.PI*2);ctx.stroke();
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);if(!a||!b)continue;const active=e.a===selected||e.b===selected||e.a===hover||e.b===hover;ctx.globalAlpha=Math.min(alphaOf(a),alphaOf(b))*(.12+.88*(a.depth+b.depth)/2);ctx.strokeStyle=active?'#ffffff77':'#ffffff19';ctx.lineWidth=active?.9:.5;ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();}
+  const ordered=[...graphNodes].sort((a,b)=>a.z-b.z);
+  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.15+.85*n.depth);ctx.fillStyle=nodeColor(n,active);ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffffbb';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
+  ctx.globalAlpha=1;ctx.font='12px system-ui';ctx.textAlign='center';const boxes=[];
+  const labels=ordered.filter(n=>n.id===selected||n.id===hover||(n.kind==='repo'&&n.depth>.56)||(view.k>2&&n.depth>.85)).sort((a,b)=>(b.id===selected||b.id===hover?1:0)-(a.id===selected||a.id===hover?1:0)||b.depth-a.depth);
+  for(const n of labels){if(alphaOf(n)<.2)continue;const active=n.id===selected||n.id===hover,title=n.kind==='file'?(n.path||n.title).split('/').pop():n.title,text=title.length>32?title.slice(0,30)+'…':title,w=ctx.measureText(text).width+8,x=n.sx-w/2,y=n.sy+n.pr+8;if(!active&&boxes.some(b=>x<b.x+b.w&&x+w>b.x&&y<b.y+15&&y+15>b.y))continue;boxes.push({x,y,w});ctx.fillStyle=active?'#fff':'#aaa';ctx.fillText(text,n.sx,y+10);}
 }
-function fitTarget(instant){
-  const pool=graphNodes.filter(n=>n.lod===0);if(!pool.length||!width||!height)return;
-  const pad=n=>n.spread||60;
-  const minX=Math.min(...pool.map(n=>n.x-pad(n)))-40,maxX=Math.max(...pool.map(n=>n.x+pad(n)))+40;
-  const minY=Math.min(...pool.map(n=>n.y-pad(n)))-40,maxY=Math.max(...pool.map(n=>n.y+pad(n)))+40;
-  const k=Math.max(.05,Math.min(1.5,(width-35)/(maxX-minX),(height-60)/(maxY-minY)));
-  camTarget={k,x:-(minX+maxX)/2*k,y:-(minY+maxY)/2*k};
-  if(instant){view.x=camTarget.x;view.y=camTarget.y;view.k=camTarget.k;camTarget=null;}
-}
-function camEase(){
-  if(!camTarget)return false;
-  const dx=camTarget.x-view.x,dy=camTarget.y-view.y,dk=camTarget.k-view.k;
-  if(Math.abs(dx)<.4&&Math.abs(dy)<.4&&Math.abs(dk)<.0008){view.x=camTarget.x;view.y=camTarget.y;view.k=camTarget.k;camTarget=null;return false;}
-  view.x+=dx*.16;view.y+=dy*.16;view.k+=dk*.16;return true;
-}
-function physics(){
-  const hubs=graphNodes.filter(n=>n.lod===0);
-  for(let i=0;i<hubs.length;i++){
-    const a=hubs[i];
-    for(let j=i+1;j<hubs.length;j++){
-      const b=hubs[j],dx=a.x-b.x||.1,dy=a.y-b.y||.1,d2=Math.max(100,dx*dx+dy*dy),dist=Math.sqrt(d2);
-      const f=Math.min(18,(a.spread+b.spread)**2*2.4/d2);
-      a.vx+=dx/dist*f;a.vy+=dy/dist*f;b.vx-=dx/dist*f;b.vy-=dy/dist*f;
-      const min=a.spread+b.spread+40;
-      if(dist<min){const push=(min-dist)*.65;a.x+=dx/dist*push;a.y+=dy/dist*push;b.x-=dx/dist*push;b.y-=dy/dist*push;}
-    }
-    a.vx-=a.x*.001;a.vy-=a.y*.001;
-  }
-  for(const e of graphEdges){
-    const a=nodesById.get(e.a),b=nodesById.get(e.b);
-    if(!a||!b||a.lod>0||b.lod>0)continue;
-    const dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy)||1,f=(dist-a.spread-b.spread-130)*.004;
-    a.vx+=dx/dist*f;a.vy+=dy/dist*f;b.vx-=dx/dist*f;b.vy-=dy/dist*f;
-  }
-  let maxV=0;
-  for(const n of hubs){
-    n.vx*=.72;n.vy*=.72;
-    if(!drag||drag.id!==n.id){n.x+=Math.max(-9,Math.min(9,n.vx));n.y+=Math.max(-9,Math.min(9,n.vy));}
-    maxV=Math.max(maxV,Math.abs(n.vx)+Math.abs(n.vy));
-    positions.set(n.id,{x:Math.round(n.x),y:Math.round(n.y)});
-  }
-  for(const n of graphNodes)if(n.lod>0&&(!drag||drag.id!==n.id)){const p=nodesById.get(n.repo||n.parent);if(p){n.x=p.x+(n.ox||0);n.y=p.y+(n.oy||0);}}
-  if(maxV<.6)hot=Math.min(hot,1);
-  if(hot<=1){for(const n of hubs){n.vx=0;n.vy=0;}savePositions();}
-}
-let posTimer=0;
-function savePositions(){clearTimeout(posTimer);posTimer=setTimeout(()=>{db.positions=Object.fromEntries([...positions].slice(0,4000));save();},600);}
 function schedule(){if(!frame)frame=requestAnimationFrame(loop);}
-function startPhysics(){hot=Math.max(hot,900);schedule();}
-function loop(){
-  frame=0;
-  if(hot>0){hot--;physics();}
-  if(autoFit)fitTarget();
-  camAnim=camEase();
-  draw();
-  if(hot>0||camAnim)schedule();
+function startPhysics(){schedule();} // Retained graph refresh hook; nodes no longer repel into separate clusters.
+function loop(timestamp=0){
+  frame=0;const dt=lastTime?Math.min(2,Math.max(.25,(timestamp-lastTime)/16.667)):1;lastTime=timestamp;let moving=false;
+  if(rotationTarget){let target=rotationTarget,dot=rotation.x*target.x+rotation.y*target.y+rotation.z*target.z+rotation.w*target.w;if(dot<0){target={x:-target.x,y:-target.y,z:-target.z,w:-target.w};dot=-dot;}if(dot>.99995){rotation=target;rotationTarget=null;persistRotation();}else{const t=1-Math.pow(.84,dt);rotation=normalizeQuaternion({x:rotation.x+(target.x-rotation.x)*t,y:rotation.y+(target.y-rotation.y)*t,z:rotation.z+(target.z-rotation.z)*t,w:rotation.w+(target.w-rotation.w)*t});moving=true;}}
+  else if(!drag&&!pinch){if(spinning){rotateGlobe(.0025*dt,0);moving=true;}else if(Math.hypot(velocity.x,velocity.y)>.0001){rotateGlobe(velocity.x*dt,velocity.y*dt);velocity.x*=Math.pow(.9,dt);velocity.y*=Math.pow(.9,dt);moving=true;}else if(velocity.x||velocity.y){velocity={x:0,y:0};persistRotation();}}
+  if(autoFit)fitTarget();draw();if(moving)schedule();else lastTime=0;
 }
 function point(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
-function world(p){return {x:(p.x-width/2-view.x)/view.k,y:(p.y-height/2-view.y)/view.k};}
-function hit(p){const w=world(p),level=lodFor(view.k);return [...graphNodes].reverse().find(n=>n.lod<=level&&alphaOf(n)>.2&&Math.hypot(n.x-w.x,n.y-w.y)<n.r+7/view.k);}
-function pinchState(){const [a,b]=[...pointers.values()];return {dist:Math.hypot(a.x-b.x,a.y-b.y)||1,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2};}
-canvas.onpointerdown=e=>{
-  autoFit=false;camTarget=null;
-  const p=point(e);pointers.set(e.pointerId,p);
-  if(pointers.size===2){drag=null;pinch=pinchState();return;}
-  if(pointers.size>2)return;
-  const n=hit(p);drag={id:n&&n.id,start:p,last:p,moved:false,pointer:e.pointerId};
-  canvas.setPointerCapture(e.pointerId);
-};
-canvas.onpointermove=e=>{
-  const p=point(e);
-  if(pointers.has(e.pointerId))pointers.set(e.pointerId,p);
-  if(pointers.size===2&&pinch){
-    const now=pinchState(),f=now.dist/pinch.dist;
-    view.k=Math.max(.05,Math.min(5,view.k*f));
-    view.x+=now.cx-pinch.cx;view.y+=now.cy-pinch.cy;
-    pinch=now;draw();return;
-  }
-  if(drag){
-    if(Math.hypot(p.x-drag.start.x,p.y-drag.start.y)>4)drag.moved=true;
-    if(drag.id){
-      const n=nodesById.get(drag.id),w=world(p);
-      if(n){n.x=w.x;n.y=w.y;
-        if(n.lod>0){const parent=nodesById.get(n.repo||n.parent);if(parent){n.ox=n.x-parent.x;n.oy=n.y-parent.y;}}
-        else positions.set(n.id,{x:Math.round(w.x),y:Math.round(w.y)});}
-    }else{view.x+=p.x-drag.last.x;view.y+=p.y-drag.last.y;}
-    drag.last=p;draw();return;
-  }
-  const n=hit(p);hover=n&&n.id;$('tooltip').hidden=!n;
-  if(n){$('tooltip').textContent=n.kind==='file'?(n.path||n.title):n.title;$('tooltip').style.left=Math.min(p.x+13,width-180)+'px';$('tooltip').style.top=Math.max(0,p.y-34)+'px';}
-  canvas.style.cursor=n?'pointer':'grab';draw();
-};
-canvas.onpointerup=e=>{
-  pointers.delete(e.pointerId);if(pointers.size<2)pinch=null;
-  if(drag&&drag.id&&!drag.moved)openNote(drag.id);
-  if(drag&&drag.moved)startPhysics();
-  drag=null;
-  if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
-};
-canvas.onpointercancel=e=>{pointers.delete(e.pointerId);pinch=null;drag=null;};
+function hit(p){return graphNodes.filter(n=>alphaOf(n)>.2&&Math.hypot(n.sx-p.x,n.sy-p.y)<n.pr+4).sort((a,b)=>b.z-a.z)[0];}
+function stopMotion(){rotationTarget=null;velocity={x:0,y:0};spinning=false;$('spin').textContent='Auto-rotate';$('spin').setAttribute('aria-pressed','false');}
+function pinchState(){const [a,b]=[...pointers.values()];return {dist:Math.hypot(a.x-b.x,a.y-b.y)||1};}
+canvas.onpointerdown=e=>{if(e.button!=null&&e.button!==0)return;e.preventDefault?.();stopMotion();const p=point(e);pointers.set(e.pointerId,p);canvas.setPointerCapture(e.pointerId);if(pointers.size===2){drag=null;pinch=pinchState();return;}if(pointers.size>2)return;drag={id:hit(p)?.id,start:p,last:p,moved:false};canvas.style.cursor='grabbing';};
+canvas.onpointermove=e=>{const p=point(e);if(pointers.has(e.pointerId))pointers.set(e.pointerId,p);if(pointers.size===2&&pinch){const next=pinchState();zoom(next.dist/pinch.dist);pinch=next;return;}if(drag){if(Math.hypot(p.x-drag.start.x,p.y-drag.start.y)>4)drag.moved=true;if(drag.moved){const dx=(p.x-drag.last.x)*.006,dy=-(p.y-drag.last.y)*.006;rotateGlobe(dx,dy);velocity={x:Math.max(-.04,Math.min(.04,dx)),y:Math.max(-.04,Math.min(.04,dy))};draw();}drag.last=p;return;}const n=hit(p);hover=n?.id;$('tooltip').hidden=!n;if(n){$('tooltip').textContent=n.path||n.title;$('tooltip').style.left=Math.max(0,Math.min(p.x+12,width-200))+'px';$('tooltip').style.top=Math.max(0,p.y-30)+'px';}canvas.style.cursor=n?'pointer':'grab';draw();};
+canvas.onpointerup=e=>{const click=drag&&!drag.moved&&pointers.size===1?drag.id:null;pointers.delete(e.pointerId);if(pointers.size<2)pinch=null;drag=null;canvas.style.cursor='grab';if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(click)openNote(click);else{persistRotation();schedule();}};
+canvas.onpointercancel=e=>{pointers.delete(e.pointerId);drag=null;pinch=null;velocity={x:0,y:0};persistRotation();};
 canvas.onpointerleave=()=>{hover=null;$('tooltip').hidden=true;draw();};
-function zoom(f,p={x:width/2,y:height/2}){autoFit=false;camTarget=null;const w=world(p);view.k=Math.max(.05,Math.min(5,view.k*f));view.x=p.x-width/2-w.x*view.k;view.y=p.y-height/2-w.y*view.k;draw();}
-function flyTo(id){const n=nodesById.get(id);if(!n)return;autoFit=false;const k=Math.max(view.k,n.lod===0?1.1:2);camTarget={k,x:-n.x*k,y:-n.y*k};schedule();}
-canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001),point(e));},{passive:false});
-canvas.addEventListener('keydown',e=>{
-  const step=60;
-  if(e.key==='ArrowLeft'){view.x+=step;}
-  else if(e.key==='ArrowRight'){view.x-=step;}
-  else if(e.key==='ArrowUp'){view.y+=step;}
-  else if(e.key==='ArrowDown'){view.y-=step;}
-  else if(e.key==='+'||e.key==='='){zoom(1.25);return;}
-  else if(e.key==='-'){zoom(.8);return;}
-  else if(e.key.toLowerCase()==='f'){autoFit=true;schedule();return;}
-  else if(e.key==='Enter'&&(hover||selected)){openNote(hover||selected);return;}
-  else return;
-  e.preventDefault();autoFit=false;camTarget=null;draw();
-});
-$('zoomIn').onclick=()=>zoom(1.25);$('zoomOut').onclick=()=>zoom(.8);$('fit').onclick=()=>{autoFit=true;camTarget=null;schedule();};
+function zoom(f){autoFit=false;view.k=Math.max(.08,Math.min(5,view.k*f));draw();}
+function flyTo(id){const n=nodesById.get(id);if(!n)return;stopMotion();const r=Math.hypot(n.wx,n.wy,n.wz),x=n.wx/r,y=n.wy/r,z=n.wz/r;rotationTarget=z<-.99999?{x:0,y:1,z:0,w:0}:normalizeQuaternion({x:y,y:-x,z:0,w:1+z});schedule();}
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001));},{passive:false});
+canvas.addEventListener('keydown',e=>{if(e.key.startsWith('Arrow')){e.preventDefault();stopMotion();rotateGlobe(e.key==='ArrowLeft'?-.12:e.key==='ArrowRight'?.12:0,e.key==='ArrowUp'?.12:e.key==='ArrowDown'?-.12:0);draw();persistRotation();}else if(e.key==='+'||e.key==='='){e.preventDefault();zoom(1.2);}else if(e.key==='-'){e.preventDefault();zoom(1/1.2);}else if(e.key.toLowerCase()==='f'){e.preventDefault();autoFit=true;fitTarget();draw();}else if(e.key==='Enter'&&(hover||selected)){e.preventDefault();openNote(hover||selected);}});
+$('zoomIn').onclick=()=>zoom(1.25);$('zoomOut').onclick=()=>zoom(.8);$('fit').onclick=()=>{autoFit=true;fitTarget();draw();};
+$('spin').onclick=()=>{spinning=!spinning;rotationTarget=null;velocity={x:0,y:0};$('spin').textContent=spinning?'Pause rotation':'Auto-rotate';$('spin').setAttribute('aria-pressed',String(spinning));if(spinning)schedule();else persistRotation();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMotion();persistRotation();}});
 $('timeSlider').oninput=()=>applyTime();
 async function api(path){let res;try{res=await fetch('https://api.github.com'+path,{headers:{Accept:'application/vnd.github+json'},signal:AbortSignal.timeout(25000),credentials:'omit'});}catch(e){throw Error('GitHub could not be reached. Check your connection and try again.');}if(!res.ok){const error=Error(res.status===404?'GitHub could not find this public account, repository, or file.':res.status===403||res.status===429?'GitHub request limit reached. Try again after '+(res.headers.get('x-ratelimit-reset')?new Date(Number(res.headers.get('x-ratelimit-reset'))*1000).toLocaleTimeString():'a while')+'. Imported data is kept.':'GitHub returned '+res.status+'. Try again later.');error.status=res.status;throw error;}return res.json();}
 function decodeFile(data){if(data.encoding!=='base64'||typeof data.content!=='string')throw Error('This file is not available as text through GitHub.');return new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/\s/g,'')),c=>c.charCodeAt(0)));}

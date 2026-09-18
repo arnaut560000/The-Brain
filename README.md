@@ -1,6 +1,6 @@
 # The Brain
 
-A self-contained second brain for your notes and public GitHub repositories, with a monochrome graph inspired by Obsidian.
+A self-contained second brain for your notes and public GitHub repositories, with a monochrome, rotatable 3D knowledge globe.
 
 The app opens already populated with **all 15 public repositories owned by arnaut560000**, their available root READMEs, and **632 indexed file paths**. This bundled snapshot was collected on September 18, 2026. Empty repositories are included too.
 
@@ -25,15 +25,17 @@ You can also open the HTML directly, but a local server gives browser storage a 
 
 ## Features
 
-- Black, white, and gray interface with a narrow sidebar and a full graph workspace. Select a node to open its details; close the panel to return to the full graph.
-- Interactive graph: drag nodes, pan, zoom or pinch, fit the graph, and use keyboard navigation. Project files and folders form clusters around their repositories.
+- Black, white, and gray interface with a narrow sidebar and one spherical graph. All projects, folders, and files share the same globe; edges still represent their actual relationships.
+- Drag anywhere on the globe to rotate it. Scroll or pinch to zoom, and use **Fit globe** to recenter it. Arrow keys rotate; +/− zoom; F fits the view.
+- Depth shading distinguishes the front and back. Clicking a node or sidebar item rotates that item toward the front and opens its details. Your viewing angle is saved locally.
+- Optional **Auto-rotate** / **Pause rotation** controls. Rotation is off by default and stops when you begin interacting with the globe.
 - Markdown notes with headings, bullet lists, bold text, code blocks, web links, and `[[wiki links]]`.
 - Create a linked note by clicking an unresolved wiki link.
 - Backlinks and automatic wiki-link updates when you rename a note.
 - Folders, tags, full-text search, and a selected-note graph view.
 - All public GitHub repositories prefilled, with descriptions, languages, topics, READMEs, and file indexes. Refresh supports pagination.
 - Shared language and topic nodes connect related repositories. Additional technology connections are inferred from README text and file paths.
-- Switch the sidebar between Projects, Files, Notes, and All items. The Files checkbox controls file clusters in the graph.
+- Switch the sidebar between Projects, Files, Notes, and All items. The Files checkbox controls file nodes in the globe.
 - Select an indexed file and choose **Load file content** to save its text for full-text search. File paths and bundled READMEs are searchable immediately.
 - Separate personal annotations preserved during repository refresh.
 - Automatic local saving, JSON backups, Markdown/text imports, and single-note Markdown export.
@@ -73,6 +75,6 @@ The initial version's browser checks covered GitHub imports, README display, doc
 node scripts/check-app.mjs
 ```
 
-These verify the bundled repository and file counts, monochrome theme, graph connections and layout, preservation of existing notes, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. This update has not had a fresh browser visual review.
+These verify the bundled repository and file counts, monochrome theme, spherical geometry, rotation, bringing a selected node to the front, drag and pinch gestures, auto-rotation, preservation of existing notes, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. The globe's desktop appearance and drag rotation were also checked in the browser.
 
 Markdown support is intentionally small; raw HTML is escaped, remote images are not embedded, and advanced GitHub Markdown features such as tables are displayed as text. This first version has no AI chat or cross-device synchronization.
