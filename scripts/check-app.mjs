@@ -51,8 +51,11 @@ assert(!source.includes('hsl('),'Graph must be grayscale, including node labels 
 for(let i=0;i<180;i++)fresh.run('loop()');
 fresh.run('fitTarget();draw()');
 assert(fresh.run('graphNodes.every(n=>n.sx>=0&&n.sx<=width&&n.sy>=0&&n.sy<=height)'),'Perspective globe must fit the canvas');
-assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").every(e=>e.angle<1.3)'),'Files must stay within their project neighborhood');
-assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").reduce((sum,e)=>sum+e.angle,0)/fileIndex.size<.4'),'Typical file connections should be short');
+assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").every(e=>e.length<GLOBE_RADIUS*.8)'),'Files must stay within their project neighborhood');
+assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").reduce((sum,e)=>sum+e.length,0)/fileIndex.size<GLOBE_RADIUS*.3'),'Typical file connections should be short');
+assert(fresh.run('graphNodes.filter(n=>n.kind==="file"&&Math.hypot(n.wx,n.wy,n.wz)<GLOBE_RADIUS*.65).length>fileIndex.size*.2'),'Globe must contain files throughout its volume, not just on a hollow shell');
+assert(fresh.run('[...ambientEdges].every(e=>graphEdges.includes(e))'),'Only actual relationships may be drawn');
+assert(fresh.run('graphNodes.every(n=>[...ambientEdges].filter(e=>e.a===n.id||e.b===n.id).length<=5)'),'Large folders must not create ambient starbursts');
 fresh.run('var stablePositions=new Map(graphNodes.map(n=>[n.id,[n.wx,n.wy,n.wz]]))');
 assert(fresh.run('graphNodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y))'));
 assert(fresh.run('graphNodes.every(n=>n.x*view.k+width/2+view.x>=0&&n.x*view.k+width/2+view.x<=width)'));
@@ -84,7 +87,13 @@ fresh.element('showFiles').checked=false;fresh.run('graph()');
 assert.equal(fresh.run('graphNodes.filter(n=>n.kind==="file").length'),0);
 assert(fresh.run('graphNodes.filter(n=>n.kind==="repo").every(n=>JSON.stringify([n.wx,n.wy,n.wz])===JSON.stringify(stablePositions.get(n.id)))'),'Toggling files must not move project territories');
 fresh.element('showFiles').checked=true;fresh.run('graph()');
-assert(fresh.run('graphNodes.filter(n=>n.kind==="repo").every(n=>focusedEdges(n.id).size<=10)'),'Selection must not highlight hundreds of spokes');
+assert(fresh.run('graphNodes.filter(n=>n.kind==="repo").every(n=>focusedEdges(n.id).size<=5)'),'Selection must not highlight hundreds of spokes');
+fresh.run('selected=graphNodes.find(n=>n.kind==="dir"&&n.children.length>1).id;var selectedFolder=selected');
+fresh.element('scope').value='local';fresh.run('graph();detail()');
+assert(fresh.run('nodesById.has(selectedFolder)&&graphNodes.some(n=>n.dir===selectedFolder)'),'Selected folder view must retain its folder and files');
+assert(fresh.run('graphNodes.filter(n=>n.kind==="file").every(n=>n.dir===selectedFolder)'),'Selected folder view should not include unrelated files');
+fresh.element('scope').value='all';fresh.run('graph();selected=graphNodes.find(n=>n.kind==="stack").id;detail()');
+assert(fresh.element('detail').innerHTML.includes('data-id="repo:'),'Technology details must list their actual connected projects');
 fresh.element('tag').value='Python';
 assert(fresh.run('visibleNotes().filter(n=>n.kind==="file").length')>0);
 

@@ -26,7 +26,8 @@ You can also open the HTML directly, but a local server gives browser storage a 
 ## Features
 
 - Black, white, and gray interface with a narrow sidebar and one spherical graph. All projects, folders, and files share the same globe; edges still represent their actual relationships.
-- Files occupy neighboring regions with their own project and folders. Project positions stay stable when files are hidden or filters change. Connections follow the globe surface; long connections are suppressed until relevant, and selection emphasizes at most ten lines to keep the view readable.
+- The globe is a filled 3D volume with irregular folder neighborhoods, rather than evenly spaced dots on a hollow shell. Files stay close to their project and folders, with stable project positions when files are hidden or filters change.
+- A sparse set of real relationships connects the neighborhoods. Per-hub line limits prevent large folders from producing starbursts; selection reveals up to five nearby connections and emphasizes the project's files. No decorative nodes or invented relationships are added. The count includes all relationships, including lines omitted from the overview.
 - Drag anywhere on the globe to rotate it. Scroll or pinch to zoom, and use **Fit globe** to recenter it. Arrow keys rotate; +/− zoom; F fits the view.
 - Depth shading distinguishes the front and back. Clicking a node or sidebar item rotates that item toward the front and opens its details. Your viewing angle is saved locally.
 - Optional **Auto-rotate** / **Pause rotation** controls. Rotation is off by default and stops when you begin interacting with the globe.
@@ -34,6 +35,7 @@ You can also open the HTML directly, but a local server gives browser storage a 
 - Create a linked note by clicking an unresolved wiki link.
 - Backlinks and automatic wiki-link updates when you rename a note.
 - Folders, tags, full-text search, and a selected-note graph view.
+- Folder focus retains that folder and its files. Technology nodes list their connected projects in the details panel. A size legend distinguishes projects, folders, and files in grayscale.
 - All public GitHub repositories prefilled, with descriptions, languages, topics, READMEs, and file indexes. Refresh supports pagination.
 - Shared language and topic nodes connect related repositories. Additional technology connections are inferred from README text and file paths.
 - Switch the sidebar between Projects, Files, Notes, and All items. The Files checkbox controls file nodes in the globe.
@@ -76,6 +78,6 @@ The initial version's browser checks covered GitHub imports, README display, doc
 node scripts/check-app.mjs
 ```
 
-These verify the bundled repository and file counts, monochrome theme, spherical geometry, file proximity, stable project positions, bounded selection highlights, perspective fitting, rotation, bringing a selected node to the front, drag and pinch gestures, auto-rotation, repair of incomplete catalogs, preservation of existing notes and deliberate removals, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. The globe's desktop appearance, selected project panel, and drag rotation were also checked in the browser at 1920×1080 and 1280×800.
+These verify the bundled repository and file counts, monochrome theme, spherical geometry, interior node density, file proximity, stable project positions, per-hub and selection line limits, perspective fitting, rotation, bringing a selected node to the front, drag and pinch gestures, auto-rotation, folder focus, technology details, repair of incomplete catalogs, preservation of existing notes and deliberate removals, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. The latest visual pass checked the filled globe, selected project, keyboard rotation, and file visibility at the browser's normal 1280×720 viewport, with no browser errors reported.
 
 Markdown support is intentionally small; raw HTML is escaped, remote images are not embedded, and advanced GitHub Markdown features such as tables are displayed as text. This first version has no AI chat or cross-device synchronization.

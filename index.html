@@ -109,11 +109,12 @@ function inline(s){
 }
 function markdown(src){let code=false,buf=[],out=[],inList=false;const closeList=()=>{if(inList){out.push('</ul>');inList=false;}};
   for(const line of String(src||'').split('\n')){if(line.startsWith('```')){closeList();if(code){out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');buf=[];}code=!code;continue;}if(code){buf.push(line);continue;}if(/^[-*] /.test(line)){if(!inList){out.push('<ul>');inList=true;}out.push('<li>'+inline(line.slice(2))+'</li>');continue;}closeList();const h=line.match(/^(#{1,6}) (.*)/);out.push(h?'<h'+h[1].length+'>'+inline(h[2])+'</h'+h[1].length+'>':line.startsWith('> ')?'<blockquote>'+inline(line.slice(2))+'</blockquote>':line?'<p>'+inline(line)+'</p>':'');}closeList();if(code)out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');return out.join('');}
-function openNote(id){selected=id;editing=false;$('app').classList.add('details-open');list();detail();graph();flyTo(id);}
+function openNote(id){selected=id;editing=false;$('app').classList.add('details-open');list();graph();detail();flyTo(id);}
 function detail(){const n=note();const el=$('detail');if(!n){const node=nodesById.get(selected);
   if(node&&node.kind==='dir'){const repo=note(node.repo||node.parent),kids=graphNodes.filter(x=>x.dir===node.id);
     el.innerHTML='<div class="eyebrow">Folder</div><h2>'+esc(node.title)+'</h2><p class="muted">'+(repo?esc(repo.title)+' · ':'')+kids.length+' files</p>'+(repo?'<button class="link-button" data-id="'+esc(repo.id)+'">Open '+esc(repo.title)+'</button>':'')+kids.slice(0,60).map(x=>'<button class="link-button" data-id="'+esc(x.id)+'">'+esc((x.path||x.title).split('/').pop())+'</button>').join('');return;}
-  el.innerHTML='<div class="eyebrow">Topic</div><h2>'+esc(node?.title||'Explore your brain')+'</h2><p class="muted">'+(node?'Connected notes and repositories:':'Select a note from the graph or library.')+'</p>'+db.notes.filter(x=>node?.tag && x.tags.includes(node.tag)).map(x=>'<button class="link-button" data-id="'+esc(x.id)+'">'+esc(x.title)+'</button>').join('');return;}
+  const linked=new Set(graphEdges.filter(e=>e.a===selected||e.b===selected).map(e=>e.a===selected?e.b:e.a));
+  el.innerHTML='<div class="eyebrow">'+(node?.kind==='stack'?'Technology':'Topic')+'</div><h2>'+esc(node?.title||'Explore your brain')+'</h2><p class="muted">'+(node?'Connected notes and repositories:':'Select a note from the graph or library.')+'</p>'+db.notes.filter(x=>linked.has(x.id)).map(x=>'<button class="link-button" data-id="'+esc(x.id)+'">'+esc(x.title)+'</button>').join('');return;}
   const backlinks=db.notes.filter(x=>wikiLinks(x.body).some(t=>target(t)?.id===n.id));
   el.innerHTML='<div class="row"><span class="eyebrow grow">'+esc(n.kind==='repo'?'Public repository':n.kind==='file'?'Imported file':'Personal note')+'</span><button id="editToggle">'+(editing?'Read':'Edit')+'</button></div><h2>'+esc(n.title).replace(/([_\/-])/g,'$1<wbr>')+'</h2>'+
     (n.kind==='repo'?'<p class="muted">'+esc(n.description||'No repository description.')+'</p><a href="https://github.com/'+esc(n.full)+'" target="_blank" rel="noopener noreferrer">'+esc(n.full)+' ↗</a>':'')+
@@ -138,7 +139,7 @@ function hueOf(name){if(!name)return null;if(LANG_HUE[name]!=null)return LANG_HU
 function lodFor(k){return $('showFiles').checked?2:k<.3?0:k<.85?1:2;}
 function nodeColor(n,active){
   if(active)return '#ffffff';
-  return n.kind==='file'?'#8b8b8b':n.kind==='dir'?'#9c9c9c':'#d6d6d6';
+  return n.kind==='file'?'#c4c4c4':n.kind==='dir'?'#b0b0b0':'#eeeeee';
 }
 function district(path){const parts=path.split('/');if(parts.length<2)return '';return parts.slice(0,Math.min(2,parts.length-1)).join('/');}
 function graph(){
@@ -179,7 +180,12 @@ function graph(){
     }
   }
   let keep=new Set(map.keys());
-  if($('scope').value==='local'&&selected){keep=new Set([selected]);const root=note(selected);if(root&&root.parent)keep.add(root.parent);for(const e of edges)if(e.a===selected||e.b===selected){keep.add(e.a);keep.add(e.b);}for(const n of map.values())if(n.parent===selected)keep.add(n.id);}
+  if($('scope').value==='local'&&selected){
+    keep=new Set([selected]);const root=note(selected)||nodesById.get(selected);
+    if(root?.parent)keep.add(root.parent);
+    for(const e of edges)if(e.a===selected||e.b===selected){keep.add(e.a);keep.add(e.b);}
+    for(const n of map.values())if(n.parent===selected||(root?.kind==='dir'&&n.parent===root.parent&&district(n.sourcePath||n.title.split('/').slice(1).join('/'))===root.title))keep.add(n.id);
+  }
   graphNodes=[...map.values()].filter(n=>keep.has(n.id));
   graphEdges=edges.filter(e=>keep.has(e.a)&&keep.has(e.b));
   nodesById=new Map(graphNodes.map(n=>[n.id,n]));
@@ -216,9 +222,8 @@ function graph(){
   startPhysics();
 }
 function legend(){
-  const seen=new Map();
-  for(const n of graphNodes)if(n.kind==='repo'&&n.hue!=null){const saved=note(n.id),name=saved&&(saved.language||saved.tags[0]);if(name&&!seen.has(name))seen.set(name,n.hue);}
-  $('legend').innerHTML=[...seen].sort().map(([name])=>'<span><i style="background:#aaa"></i>'+esc(name)+'</span>').join('');
+  $('legend').innerHTML='<span><i style="background:#eee;width:7px;height:7px"></i>Project</span><span><i style="background:#b0b0b0;width:5px;height:5px"></i>Folder</span><span><i style="background:#c4c4c4;width:3px;height:3px"></i>File</span>';
+  $('graphCount').title='All relationships are counted. A limited set is drawn to keep the globe readable; select or hover a node to reveal its nearby connections.';
 }
 function timeBounds(){const ts=db.notes.filter(n=>n.kind==='repo'&&n.pushed).map(n=>Date.parse(n.pushed)).filter(Number.isFinite);return ts.length>1?[Math.min(...ts),Math.max(...ts)]:null;}
 function applyTime(quiet){
@@ -250,10 +255,12 @@ const savedRotation=db.globeRotation;
 let rotation=savedRotation&&['x','y','z','w'].every(k=>Number.isFinite(savedRotation[k]))&&Math.hypot(savedRotation.x,savedRotation.y,savedRotation.z,savedRotation.w)>.001?normalizeQuaternion(savedRotation):{x:0,y:0,z:0,w:1};
 let rotationTarget=null,velocity={x:0,y:0},spinning=false,lastTime=0;
 function hashCoordinate(text){let value=2166136261;for(let i=0;i<text.length;i++){value^=text.charCodeAt(i);value=Math.imul(value,16777619);}value^=value>>>16;value=Math.imul(value,0x7feb352d);value^=value>>>15;return (value>>>0)/4294967296;}
-let globeLayoutKey='',globePositions=new Map();
-function onSphere(p,r=GLOBE_RADIUS){const length=Math.hypot(p.wx,p.wy,p.wz)||1;return {wx:p.wx/length*r,wy:p.wy/length*r,wz:p.wz/length*r};}
-function centerOf(points){return onSphere(points.reduce((p,n)=>({wx:p.wx+n.wx,wy:p.wy+n.wy,wz:p.wz+n.wz}),{wx:0,wy:0,wz:0}));}
-// Divide one continuous sphere into adjacent territories sized to their real contents.
+let globeLayoutKey='',globePositions=new Map(),ambientEdges=new Set();
+function onSphere(p,r=GLOBE_RADIUS){const length=Math.hypot(p.wx,p.wy,p.wz);return length<1e-8?{wx:r,wy:0,wz:0}:{wx:p.wx/length*r,wy:p.wy/length*r,wz:p.wz/length*r};}
+function centerOf(points){const count=points.length||1;return points.reduce((p,n)=>({wx:p.wx+n.wx/count,wy:p.wy+n.wy/count,wz:p.wz+n.wz/count}),{wx:0,wy:0,wz:0});}
+function mixPoint(a,b,t){return {wx:a.wx+(b.wx-a.wx)*t,wy:a.wy+(b.wy-a.wy)*t,wz:a.wz+(b.wz-a.wz)*t};}
+function distance3(a,b){return Math.hypot(a.wx-b.wx,a.wy-b.wy,a.wz-b.wz);}
+// Divide a filled sphere into irregular neighborhoods sized to their real contents.
 // The same partition is used regardless of search, selection, or visible node types.
 function partitionSphere(groups,points,assign){
   if(groups.length===1){assign(groups[0],points);return;}
@@ -272,15 +279,16 @@ function layoutGlobe(){
   if(key!==globeLayoutKey){
     globeLayoutKey=key;globePositions=new Map();
     const groups=repos.map(repo=>{const children=files.filter(f=>f.parent===repo.id).sort((a,b)=>a.id.localeCompare(b.id));return {repo,children,size:Math.max(5,children.length+1)};});
-    const count=groups.reduce((sum,g)=>sum+g.size,0),points=Array.from({length:count},(_,i)=>{const z=1-2*(i+.5)/count,a=i*GOLD,ring=Math.sqrt(1-z*z);return {wx:Math.cos(a)*ring*GLOBE_RADIUS,wy:Math.sin(a)*ring*GLOBE_RADIUS,wz:z*GLOBE_RADIUS};});
+    const count=groups.reduce((sum,g)=>sum+g.size,0),points=Array.from({length:count},(_,i)=>{const z=1-2*(i+.5)/count,a=i*GOLD,ring=Math.sqrt(1-z*z),radius=GLOBE_RADIUS*Math.cbrt(.025+.975*hashCoordinate('volume:'+i));return {wx:Math.cos(a)*ring*radius,wy:Math.sin(a)*ring*radius,wz:z*radius};});
     if(groups.length)partitionSphere(groups,points,(group,region)=>{
       const hub=centerOf(region);globePositions.set(group.repo.id,hub);
       region.sort((a,b)=>Math.hypot(a.wx-hub.wx,a.wy-hub.wy,a.wz-hub.wz)-Math.hypot(b.wx-hub.wx,b.wy-hub.wy,b.wz-hub.wz));region.shift();
       const folders=new Map();for(const f of group.children){const path=f.sourcePath||f.title.split('/').slice(1).join('/'),d=district(path);if(!folders.has(d))folders.set(d,[]);folders.get(d).push(f);}
       const subgroups=[...folders].sort(([a],[b])=>a.localeCompare(b)).map(([path,children])=>({path,children,size:children.length}));
       if(subgroups.length)partitionSphere(subgroups,region.slice(0,group.children.length),(folder,slots)=>{
-        if(folder.path)globePositions.set('dir:'+group.repo.id+':'+folder.path,centerOf(slots));
-        folder.children.forEach((f,i)=>{const p=slots[i],depth=.965+.035*hashCoordinate(f.id);globePositions.set(f.id,onSphere(p,GLOBE_RADIUS*depth));});
+        const middle=centerOf(slots),compression=.56+.24*hashCoordinate(group.repo.id+':'+folder.path);
+        if(folder.path)globePositions.set('dir:'+group.repo.id+':'+folder.path,mixPoint(middle,hub,folder.children.length===1?.23:.08));
+        folder.children.forEach((f,i)=>{const spread=compression+.12*hashCoordinate(f.id);globePositions.set(f.id,mixPoint(middle,slots[i],spread));});
       });
     });
   }
@@ -289,11 +297,20 @@ function layoutGlobe(){
     if(!p){const related=graphEdges.filter(e=>e.a===n.id||e.b===n.id).map(e=>globePositions.get(e.a===n.id?e.b:e.a)).filter(Boolean);
       const z=hashCoordinate(n.id+':latitude')*2-1,a=hashCoordinate(n.id+':longitude')*Math.PI*2,ring=Math.sqrt(1-z*z);
       const offset={wx:Math.cos(a)*ring*GLOBE_RADIUS,wy:Math.sin(a)*ring*GLOBE_RADIUS,wz:z*GLOBE_RADIUS};
-      const middle=related.length?centerOf(related):offset;
-      p=onSphere({wx:middle.wx+offset.wx*.22,wy:middle.wy+offset.wy*.22,wz:middle.wz+offset.wz*.22},GLOBE_RADIUS*.98);
+      const middle=related.length?centerOf(related):mixPoint({wx:0,wy:0,wz:0},offset,.7);
+      p={wx:middle.wx+offset.wx*.10,wy:middle.wy+offset.wy*.10,wz:middle.wz+offset.wz*.10};
+      if(Math.hypot(p.wx,p.wy,p.wz)>GLOBE_RADIUS)p=onSphere(p);
     }Object.assign(n,p);
   }
-  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);e.angle=Math.acos(Math.max(-1,Math.min(1,(a.wx*b.wx+a.wy*b.wy+a.wz*b.wz)/(Math.hypot(a.wx,a.wy,a.wz)*Math.hypot(b.wx,b.wy,b.wz)))));}
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);e.length=distance3(a,b);}
+  // Keep a sparse set of real relationships, never synthetic proximity links.
+  // A per-hub limit prevents large root folders from becoming radial starbursts.
+  ambientEdges=new Set();const degree=new Map();
+  for(const e of [...graphEdges].sort((a,b)=>a.length-b.length)){
+    const a=nodesById.get(e.a),b=nodesById.get(e.b),limit=n=>n.kind==='file'?2:n.kind==='repo'?5:n.kind==='dir'?4:3;
+    if(e.length>GLOBE_RADIUS*(e.tree?.42:.8)||(degree.get(a.id)||0)>=limit(a)||(degree.get(b.id)||0)>=limit(b))continue;
+    ambientEdges.add(e);degree.set(a.id,(degree.get(a.id)||0)+1);degree.set(b.id,(degree.get(b.id)||0)+1);
+  }
 }
 function rotatePoint(point,q=rotation){const tx=2*(q.y*point.wz-q.z*point.wy),ty=2*(q.z*point.wx-q.x*point.wz),tz=2*(q.x*point.wy-q.y*point.wx);return {x:point.wx+q.w*tx+q.y*tz-q.z*ty,y:point.wy+q.w*ty+q.z*tx-q.x*tz,z:point.wz+q.w*tz+q.x*ty-q.y*tx};}
 function rotateGlobe(dx,dy){const yaw={x:0,y:Math.sin(dx/2),z:0,w:Math.cos(dx/2)},pitch={x:Math.sin(dy/2),y:0,z:0,w:Math.cos(dy/2)};rotation=multiplyQuaternion(pitch,multiplyQuaternion(yaw,rotation));}
@@ -304,24 +321,21 @@ function fitTarget(){if(!width||!height)return;view.k=Math.max(.08,Math.min(widt
 function resize(){const rect=$('graphArea').getBoundingClientRect();width=rect.width;height=rect.height;const dpr=devicePixelRatio||1;canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(autoFit)fitTarget();draw();}
 new ResizeObserver(resize).observe($('graphArea'));
 function screenPoint(p){const perspective=4/(4-p.z/GLOBE_RADIUS);return {sx:width/2+view.x+p.x*view.k*perspective,sy:height/2+view.y+p.y*view.k*perspective};}
-function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));Object.assign(n,screenPoint(n));n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.65:n.kind==='dir'?2.25:n.kind==='repo'?4:2.5)*(.4+.6*n.depth)*Math.max(.8,Math.sqrt(view.k));}}
-function focusedEdges(id){return new Set(graphEdges.filter(e=>e.a===id||e.b===id).sort((a,b)=>a.angle-b.angle).slice(0,10));}
+function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));Object.assign(n,screenPoint(n));n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.7:n.kind==='dir'?2.1:n.kind==='repo'?4.3:2.4)*(.55+.55*n.depth)*Math.max(.8,Math.sqrt(view.k));}}
+function focusedEdges(id){return new Set(graphEdges.filter(e=>e.a===id||e.b===id).sort((a,b)=>a.length-b.length).slice(0,5));}
 function drawEdge(e,active,emphasis){
-  const a=nodesById.get(e.a),b=nodesById.get(e.b),steps=Math.max(3,Math.ceil(e.angle*12));
-  const fade=Math.min(alphaOf(a),alphaOf(b))*emphasis;let prev=null;
-  // Short arcs follow the globe surface instead of cutting through its center.
-  for(let i=0;i<=steps;i++){const t=i/steps,p=rotatePoint(onSphere({wx:a.wx*(1-t)+b.wx*t,wy:a.wy*(1-t)+b.wy*t,wz:a.wz*(1-t)+b.wz*t},Math.hypot(a.wx,a.wy,a.wz)*(1-t)+Math.hypot(b.wx,b.wy,b.wz)*t)),s=screenPoint(p);
-    if(prev){const front=Math.max(0,(p.z+prev.z)/(2*GLOBE_RADIUS));ctx.globalAlpha=fade*(active?.12+front*.35:.018+front*.12);ctx.strokeStyle='#ffffff';ctx.lineWidth=active?.8:.55;ctx.beginPath();ctx.moveTo(prev.sx,prev.sy);ctx.lineTo(s.sx,s.sy);ctx.stroke();}prev={...s,z:p.z};
-  }
+  const a=nodesById.get(e.a),b=nodesById.get(e.b),front=(a.depth+b.depth)/2;
+  ctx.globalAlpha=Math.min(alphaOf(a),alphaOf(b))*emphasis*(active?.13+front*.16:.025+front*.13);
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=active?.8:.55;ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
 }
 function draw(){
   ctx.clearRect(0,0,width,height);projectGlobe();
   if(!graphNodes.length){ctx.fillStyle='#999';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No matching notes or projects.',width/2,height/2);return;}
   const focus=hover||selected,focusNode=nodesById.get(focus),root=focusNode&&(focusNode.kind==='repo'?focusNode.id:focusNode.repo||focusNode.parent),highlight=focusedEdges(focus);
   const belongs=n=>root&&(n.id===root||n.repo===root||n.parent===root);
-  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),active=highlight.has(e);if(!active&&e.angle>.65)continue;drawEdge(e,active,root&&!belongs(a)&&!belongs(b)?.45:1);}
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),active=highlight.has(e);if(!active&&!ambientEdges.has(e))continue;drawEdge(e,active,root&&!belongs(a)&&!belongs(b)?.7:1);}
   const ordered=[...graphNodes].sort((a,b)=>a.z-b.z);
-  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.08+.92*Math.pow(n.depth,2))*(root&&!belongs(n)&&!active?.6:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
+  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.18+.82*Math.pow(n.depth,1.3))*(root&&!belongs(n)&&!active?.78:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
   ctx.globalAlpha=1;ctx.font='12px system-ui';ctx.textAlign='center';const boxes=[];
   const labels=ordered.filter(n=>n.id===selected||n.id===hover||(n.kind==='repo'&&n.depth>.56)||(view.k>2&&n.depth>.85)).sort((a,b)=>(b.id===selected||b.id===hover?1:0)-(a.id===selected||a.id===hover?1:0)||b.depth-a.depth);
   for(const n of labels){if(alphaOf(n)<.2)continue;const active=n.id===selected||n.id===hover,title=n.kind==='file'?(n.path||n.title).split('/').pop():n.title,text=title.length>32?title.slice(0,30)+'…':title,w=ctx.measureText(text).width+8,x=n.sx-w/2,y=n.sy+n.pr+8;if(!active&&boxes.some(b=>x<b.x+b.w&&x+w>b.x&&y<b.y+15&&y+15>b.y))continue;boxes.push({x,y,w});ctx.fillStyle=active?'#fff':'#aaa';ctx.fillText(text,n.sx,y+10);}
