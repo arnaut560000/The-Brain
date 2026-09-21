@@ -14,6 +14,7 @@
 @media(max-width:1100px){.app{grid-template-columns:38px 230px minmax(0,1fr)}.app.details-open{grid-template-columns:38px 230px minmax(0,1fr)}.details-open .workspace{display:none}}@media(max-width:620px){.app,.app.details-open{grid-template-columns:34px minmax(0,1fr);grid-template-rows:230px minmax(400px,1fr);height:auto;min-height:100dvh}.rail{grid-column:1;grid-row:1/3}.sidebar{grid-column:2;grid-row:1}.brand{height:35px;flex-shrink:0}.side-controls{padding:6px 10px}.side-controls>.row{display:none}.side-bottom{padding:5px 10px}.side-bottom>.primary,.storage{display:none}.side-bottom .row{display:flex}.section-label{padding-bottom:3px}#noteList{min-height:40px}.workspace,.inspector{grid-column:2;grid-row:2;height:calc(100dvh - 230px);min-height:400px}.topbar{gap:4px;padding:0 8px;flex-wrap:wrap;height:auto;min-height:65px}.topbar h1{margin-right:10px}.topbar .grow{display:none}.topbar select{max-width:150px}.graph-foot span:first-child{display:none}.graph-tools{right:8px;bottom:8px}}
 .legend{position:absolute;left:14px;bottom:15px;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:46%;pointer-events:none;font-size:11px;color:#9a9a9a}.legend span{display:flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border-radius:50%;display:block}.timeline{position:absolute;left:14px;top:12px;display:flex;align-items:center;gap:9px;background:#232323cc;border:1px solid #333;border-radius:4px;padding:5px 10px;font-size:11px;color:#9a9a9a}.timeline input{width:150px;min-height:0;accent-color:#9a9a9a;background:none;border:0;padding:0}#graph:focus-visible{outline:1px solid #555;outline-offset:-1px}@media(max-width:1100px){.legend{max-width:60%;bottom:44px}.timeline input{width:104px}}
 ::selection{background:#505050;color:#fff}
+.inspector-body>h2{font-size:20px;line-height:1.45;text-wrap:balance}.inspector-body>a{overflow-wrap:anywhere}.graph-heading{top:52px}.reading{font-size:14px;line-height:1.8}
 @media(max-width:1100px){.graph-heading{top:45px;left:14px;right:14px;text-align:left}}
 </style>
 </head>
@@ -79,6 +80,8 @@ if(db.seedVersion!==bundled.generated){
   for(const project of bundled.projects){if(db.hiddenSeedIds.includes(project.id))continue;const old=db.notes.find(n=>n.id===project.id);if(!old)db.notes.push(structuredClone(project));else if(!old.synced||old.synced<=project.synced){const own={body:old.body,title:old.title,folder:old.folder,tags:[...new Set([...old.tags,...project.tags])]};Object.assign(old,structuredClone(project),own);}}
   db.seedVersion=bundled.generated;
 }
+// Repair incomplete catalogs even when their snapshot version is already current.
+for(const project of bundled.projects)if(!db.hiddenSeedIds.includes(project.id)&&!db.notes.some(n=>n.id===project.id))db.notes.push(structuredClone(project));
 let selected=null, editing=false, query='', busy=false, storageFailed=false;
 let fileIndex=new Map();
 function indexFiles(){fileIndex=new Map();for(const repo of db.notes.filter(n=>n.kind==='repo'))for(const file of repo.files||[]){const id='file:'+repo.id+':'+file.path;if(db.hiddenSeedIds.includes(id))continue;fileIndex.set(id,{id,title:repo.title+'/'+file.path,kind:'file',parent:repo.id,folder:'GitHub / '+repo.title,tags:[],body:'',sourcePath:file.path,full:repo.full,branch:repo.branch,size:file.size,indexed:true});}}
@@ -112,7 +115,7 @@ function detail(){const n=note();const el=$('detail');if(!n){const node=nodesByI
     el.innerHTML='<div class="eyebrow">Folder</div><h2>'+esc(node.title)+'</h2><p class="muted">'+(repo?esc(repo.title)+' · ':'')+kids.length+' files</p>'+(repo?'<button class="link-button" data-id="'+esc(repo.id)+'">Open '+esc(repo.title)+'</button>':'')+kids.slice(0,60).map(x=>'<button class="link-button" data-id="'+esc(x.id)+'">'+esc((x.path||x.title).split('/').pop())+'</button>').join('');return;}
   el.innerHTML='<div class="eyebrow">Topic</div><h2>'+esc(node?.title||'Explore your brain')+'</h2><p class="muted">'+(node?'Connected notes and repositories:':'Select a note from the graph or library.')+'</p>'+db.notes.filter(x=>node?.tag && x.tags.includes(node.tag)).map(x=>'<button class="link-button" data-id="'+esc(x.id)+'">'+esc(x.title)+'</button>').join('');return;}
   const backlinks=db.notes.filter(x=>wikiLinks(x.body).some(t=>target(t)?.id===n.id));
-  el.innerHTML='<div class="row"><span class="eyebrow grow">'+esc(n.kind==='repo'?'Public repository':n.kind==='file'?'Imported file':'Personal note')+'</span><button id="editToggle">'+(editing?'Read':'Edit')+'</button></div><h2>'+esc(n.title)+'</h2>'+
+  el.innerHTML='<div class="row"><span class="eyebrow grow">'+esc(n.kind==='repo'?'Public repository':n.kind==='file'?'Imported file':'Personal note')+'</span><button id="editToggle">'+(editing?'Read':'Edit')+'</button></div><h2>'+esc(n.title).replace(/([_\/-])/g,'$1<wbr>')+'</h2>'+
     (n.kind==='repo'?'<p class="muted">'+esc(n.description||'No repository description.')+'</p><a href="https://github.com/'+esc(n.full)+'" target="_blank" rel="noopener noreferrer">'+esc(n.full)+' ↗</a>':'')+
     '<div class="chips">'+n.tags.map(t=>'<span class="chip">#'+esc(t)+'</span>').join('')+'</div>'+
     (n.indexed?'<p class="small muted">'+esc(n.sourcePath)+' · '+Math.ceil(n.size/1024)+' KB</p><div class="row"><button id="loadIndexed" '+(busy?'disabled':'')+'>'+(n.body?'Reload source':'Load file content')+'</button><a href="https://github.com/'+esc(n.full)+'/blob/'+encodeURIComponent(n.branch)+'/'+n.sourcePath.split('/').map(encodeURIComponent).join('/')+'" target="_blank" rel="noopener noreferrer">Open on GitHub ↗</a></div>':'')+
@@ -247,23 +250,78 @@ const savedRotation=db.globeRotation;
 let rotation=savedRotation&&['x','y','z','w'].every(k=>Number.isFinite(savedRotation[k]))&&Math.hypot(savedRotation.x,savedRotation.y,savedRotation.z,savedRotation.w)>.001?normalizeQuaternion(savedRotation):{x:0,y:0,z:0,w:1};
 let rotationTarget=null,velocity={x:0,y:0},spinning=false,lastTime=0;
 function hashCoordinate(text){let value=2166136261;for(let i=0;i<text.length;i++){value^=text.charCodeAt(i);value=Math.imul(value,16777619);}value^=value>>>16;value=Math.imul(value,0x7feb352d);value^=value>>>15;return (value>>>0)/4294967296;}
-function layoutGlobe(){for(const n of graphNodes){const z=hashCoordinate(n.id+':latitude')*2-1,angle=hashCoordinate(n.id+':longitude')*Math.PI*2,r=GLOBE_RADIUS*(n.kind==='file'?1:n.kind==='dir'?.95:n.kind==='repo'?.86:.78),ring=Math.sqrt(1-z*z);n.wx=Math.cos(angle)*ring*r;n.wy=Math.sin(angle)*ring*r;n.wz=z*r;}}
+let globeLayoutKey='',globePositions=new Map();
+function onSphere(p,r=GLOBE_RADIUS){const length=Math.hypot(p.wx,p.wy,p.wz)||1;return {wx:p.wx/length*r,wy:p.wy/length*r,wz:p.wz/length*r};}
+function centerOf(points){return onSphere(points.reduce((p,n)=>({wx:p.wx+n.wx,wy:p.wy+n.wy,wz:p.wz+n.wz}),{wx:0,wy:0,wz:0}));}
+// Divide one continuous sphere into adjacent territories sized to their real contents.
+// The same partition is used regardless of search, selection, or visible node types.
+function partitionSphere(groups,points,assign){
+  if(groups.length===1){assign(groups[0],points);return;}
+  const axes=['wx','wy','wz'];
+  const axis=axes.sort((a,b)=>(Math.max(...points.map(p=>p[b]))-Math.min(...points.map(p=>p[b])))-(Math.max(...points.map(p=>p[a]))-Math.min(...points.map(p=>p[a]))))[0];
+  points.sort((a,b)=>a[axis]-b[axis]);
+  const total=groups.reduce((sum,g)=>sum+g.size,0);let cut=1,count=groups[0].size;
+  while(cut<groups.length-1&&Math.abs(count+groups[cut].size-total/2)<Math.abs(count-total/2)){count+=groups[cut++].size;}
+  partitionSphere(groups.slice(0,cut),points.slice(0,count),assign);
+  partitionSphere(groups.slice(cut),points.slice(count),assign);
+}
+function layoutGlobe(){
+  const repos=db.notes.filter(n=>n.kind==='repo').sort((a,b)=>(a.language||'').localeCompare(b.language||'')||a.id.localeCompare(b.id));
+  const files=allNotes().filter(n=>n.kind==='file');
+  const key=JSON.stringify(repos.map(r=>[r.id,r.language,files.filter(f=>f.parent===r.id).map(f=>[f.id,f.sourcePath]).sort()]));
+  if(key!==globeLayoutKey){
+    globeLayoutKey=key;globePositions=new Map();
+    const groups=repos.map(repo=>{const children=files.filter(f=>f.parent===repo.id).sort((a,b)=>a.id.localeCompare(b.id));return {repo,children,size:Math.max(5,children.length+1)};});
+    const count=groups.reduce((sum,g)=>sum+g.size,0),points=Array.from({length:count},(_,i)=>{const z=1-2*(i+.5)/count,a=i*GOLD,ring=Math.sqrt(1-z*z);return {wx:Math.cos(a)*ring*GLOBE_RADIUS,wy:Math.sin(a)*ring*GLOBE_RADIUS,wz:z*GLOBE_RADIUS};});
+    if(groups.length)partitionSphere(groups,points,(group,region)=>{
+      const hub=centerOf(region);globePositions.set(group.repo.id,hub);
+      region.sort((a,b)=>Math.hypot(a.wx-hub.wx,a.wy-hub.wy,a.wz-hub.wz)-Math.hypot(b.wx-hub.wx,b.wy-hub.wy,b.wz-hub.wz));region.shift();
+      const folders=new Map();for(const f of group.children){const path=f.sourcePath||f.title.split('/').slice(1).join('/'),d=district(path);if(!folders.has(d))folders.set(d,[]);folders.get(d).push(f);}
+      const subgroups=[...folders].sort(([a],[b])=>a.localeCompare(b)).map(([path,children])=>({path,children,size:children.length}));
+      if(subgroups.length)partitionSphere(subgroups,region.slice(0,group.children.length),(folder,slots)=>{
+        if(folder.path)globePositions.set('dir:'+group.repo.id+':'+folder.path,centerOf(slots));
+        folder.children.forEach((f,i)=>{const p=slots[i],depth=.965+.035*hashCoordinate(f.id);globePositions.set(f.id,onSphere(p,GLOBE_RADIUS*depth));});
+      });
+    });
+  }
+  for(const n of graphNodes){
+    let p=globePositions.get(n.id);
+    if(!p){const related=graphEdges.filter(e=>e.a===n.id||e.b===n.id).map(e=>globePositions.get(e.a===n.id?e.b:e.a)).filter(Boolean);
+      const z=hashCoordinate(n.id+':latitude')*2-1,a=hashCoordinate(n.id+':longitude')*Math.PI*2,ring=Math.sqrt(1-z*z);
+      const offset={wx:Math.cos(a)*ring*GLOBE_RADIUS,wy:Math.sin(a)*ring*GLOBE_RADIUS,wz:z*GLOBE_RADIUS};
+      const middle=related.length?centerOf(related):offset;
+      p=onSphere({wx:middle.wx+offset.wx*.22,wy:middle.wy+offset.wy*.22,wz:middle.wz+offset.wz*.22},GLOBE_RADIUS*.98);
+    }Object.assign(n,p);
+  }
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);e.angle=Math.acos(Math.max(-1,Math.min(1,(a.wx*b.wx+a.wy*b.wy+a.wz*b.wz)/(Math.hypot(a.wx,a.wy,a.wz)*Math.hypot(b.wx,b.wy,b.wz)))));}
+}
 function rotatePoint(point,q=rotation){const tx=2*(q.y*point.wz-q.z*point.wy),ty=2*(q.z*point.wx-q.x*point.wz),tz=2*(q.x*point.wy-q.y*point.wx);return {x:point.wx+q.w*tx+q.y*tz-q.z*ty,y:point.wy+q.w*ty+q.z*tx-q.x*tz,z:point.wz+q.w*tz+q.x*ty-q.y*tx};}
 function rotateGlobe(dx,dy){const yaw={x:0,y:Math.sin(dx/2),z:0,w:Math.cos(dx/2)},pitch={x:Math.sin(dy/2),y:0,z:0,w:Math.cos(dy/2)};rotation=multiplyQuaternion(pitch,multiplyQuaternion(yaw,rotation));}
 const canvas=$('graph'),ctx=canvas.getContext('2d');
 let drag=null,hover=null,pointers=new Map(),pinch=null,saveRotationTimer=0;
 function persistRotation(){clearTimeout(saveRotationTimer);saveRotationTimer=setTimeout(()=>{db.globeRotation={...rotation};save();},350);}
-function fitTarget(){if(!width||!height)return;view.k=Math.max(.08,Math.min(width-60,height-100)/(GLOBE_RADIUS*2));view.x=0;view.y=10;}
+function fitTarget(){if(!width||!height)return;view.k=Math.max(.08,Math.min(width-90,height-150)/(GLOBE_RADIUS*2.12));view.x=0;view.y=16;}
 function resize(){const rect=$('graphArea').getBoundingClientRect();width=rect.width;height=rect.height;const dpr=devicePixelRatio||1;canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(autoFit)fitTarget();draw();}
 new ResizeObserver(resize).observe($('graphArea'));
-function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));n.sx=width/2+view.x+n.x*view.k;n.sy=height/2+view.y+n.y*view.k;n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.6:n.kind==='dir'?2.2:n.kind==='repo'?4.5:3)*(.55+.45*n.depth)*Math.max(.75,Math.sqrt(view.k));}}
+function screenPoint(p){const perspective=4/(4-p.z/GLOBE_RADIUS);return {sx:width/2+view.x+p.x*view.k*perspective,sy:height/2+view.y+p.y*view.k*perspective};}
+function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));Object.assign(n,screenPoint(n));n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.65:n.kind==='dir'?2.25:n.kind==='repo'?4:2.5)*(.4+.6*n.depth)*Math.max(.8,Math.sqrt(view.k));}}
+function focusedEdges(id){return new Set(graphEdges.filter(e=>e.a===id||e.b===id).sort((a,b)=>a.angle-b.angle).slice(0,10));}
+function drawEdge(e,active,emphasis){
+  const a=nodesById.get(e.a),b=nodesById.get(e.b),steps=Math.max(3,Math.ceil(e.angle*12));
+  const fade=Math.min(alphaOf(a),alphaOf(b))*emphasis;let prev=null;
+  // Short arcs follow the globe surface instead of cutting through its center.
+  for(let i=0;i<=steps;i++){const t=i/steps,p=rotatePoint(onSphere({wx:a.wx*(1-t)+b.wx*t,wy:a.wy*(1-t)+b.wy*t,wz:a.wz*(1-t)+b.wz*t},Math.hypot(a.wx,a.wy,a.wz)*(1-t)+Math.hypot(b.wx,b.wy,b.wz)*t)),s=screenPoint(p);
+    if(prev){const front=Math.max(0,(p.z+prev.z)/(2*GLOBE_RADIUS));ctx.globalAlpha=fade*(active?.12+front*.35:.018+front*.12);ctx.strokeStyle='#ffffff';ctx.lineWidth=active?.8:.55;ctx.beginPath();ctx.moveTo(prev.sx,prev.sy);ctx.lineTo(s.sx,s.sy);ctx.stroke();}prev={...s,z:p.z};
+  }
+}
 function draw(){
   ctx.clearRect(0,0,width,height);projectGlobe();
   if(!graphNodes.length){ctx.fillStyle='#999';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No matching notes or projects.',width/2,height/2);return;}
-  ctx.strokeStyle='#ffffff09';ctx.lineWidth=1;ctx.beginPath();ctx.arc(width/2+view.x,height/2+view.y,GLOBE_RADIUS*view.k,0,Math.PI*2);ctx.stroke();
-  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b);if(!a||!b)continue;const active=e.a===selected||e.b===selected||e.a===hover||e.b===hover;ctx.globalAlpha=Math.min(alphaOf(a),alphaOf(b))*(.12+.88*(a.depth+b.depth)/2);ctx.strokeStyle=active?'#ffffff77':'#ffffff19';ctx.lineWidth=active?.9:.5;ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();}
+  const focus=hover||selected,focusNode=nodesById.get(focus),root=focusNode&&(focusNode.kind==='repo'?focusNode.id:focusNode.repo||focusNode.parent),highlight=focusedEdges(focus);
+  const belongs=n=>root&&(n.id===root||n.repo===root||n.parent===root);
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),active=highlight.has(e);if(!active&&e.angle>.65)continue;drawEdge(e,active,root&&!belongs(a)&&!belongs(b)?.45:1);}
   const ordered=[...graphNodes].sort((a,b)=>a.z-b.z);
-  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.15+.85*n.depth);ctx.fillStyle=nodeColor(n,active);ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffffbb';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
+  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.08+.92*Math.pow(n.depth,2))*(root&&!belongs(n)&&!active?.6:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
   ctx.globalAlpha=1;ctx.font='12px system-ui';ctx.textAlign='center';const boxes=[];
   const labels=ordered.filter(n=>n.id===selected||n.id===hover||(n.kind==='repo'&&n.depth>.56)||(view.k>2&&n.depth>.85)).sort((a,b)=>(b.id===selected||b.id===hover?1:0)-(a.id===selected||a.id===hover?1:0)||b.depth-a.depth);
   for(const n of labels){if(alphaOf(n)<.2)continue;const active=n.id===selected||n.id===hover,title=n.kind==='file'?(n.path||n.title).split('/').pop():n.title,text=title.length>32?title.slice(0,30)+'…':title,w=ctx.measureText(text).width+8,x=n.sx-w/2,y=n.sy+n.pr+8;if(!active&&boxes.some(b=>x<b.x+b.w&&x+w>b.x&&y<b.y+15&&y+15>b.y))continue;boxes.push({x,y,w});ctx.fillStyle=active?'#fff':'#aaa';ctx.fillText(text,n.sx,y+10);}

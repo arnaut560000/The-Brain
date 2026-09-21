@@ -26,6 +26,7 @@ You can also open the HTML directly, but a local server gives browser storage a 
 ## Features
 
 - Black, white, and gray interface with a narrow sidebar and one spherical graph. All projects, folders, and files share the same globe; edges still represent their actual relationships.
+- Files occupy neighboring regions with their own project and folders. Project positions stay stable when files are hidden or filters change. Connections follow the globe surface; long connections are suppressed until relevant, and selection emphasizes at most ten lines to keep the view readable.
 - Drag anywhere on the globe to rotate it. Scroll or pinch to zoom, and use **Fit globe** to recenter it. Arrow keys rotate; +/− zoom; F fits the view.
 - Depth shading distinguishes the front and back. Clicking a node or sidebar item rotates that item toward the front and opens its details. Your viewing angle is saved locally.
 - Optional **Auto-rotate** / **Pause rotation** controls. Rotation is off by default and stops when you begin interacting with the globe.
@@ -55,7 +56,7 @@ Notes are stored in this browser's local storage, not inside `index.html` or a G
 
 **Import** accepts a Brain JSON backup or Markdown/text files. Backup notes are merged by ID; existing IDs are preserved. For recovery into an empty installation, import your backup before adding new content.
 
-Existing personal notes and annotations are preserved when this version adds the bundled projects to browser storage. Unedited getting-started examples from the first version are removed. Locally removed bundled items are remembered, so reopening the app does not recreate them.
+Existing personal notes and annotations are preserved when this version adds the bundled projects to browser storage. Incomplete catalogs are repaired on startup even when their saved snapshot version is current, including missing empty repositories. Unedited getting-started examples from the first version are removed. Locally removed bundled items are remembered, so reopening the app does not recreate them.
 
 ## Refresh the bundled snapshot
 
@@ -75,6 +76,6 @@ The initial version's browser checks covered GitHub imports, README display, doc
 node scripts/check-app.mjs
 ```
 
-These verify the bundled repository and file counts, monochrome theme, spherical geometry, rotation, bringing a selected node to the front, drag and pinch gestures, auto-rotation, preservation of existing notes, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. The globe's desktop appearance and drag rotation were also checked in the browser.
+These verify the bundled repository and file counts, monochrome theme, spherical geometry, file proximity, stable project positions, bounded selection highlights, perspective fitting, rotation, bringing a selected node to the front, drag and pinch gestures, auto-rotation, repair of incomplete catalogs, preservation of existing notes and deliberate removals, persistence, indexed-file loading, repository refresh, and storage failure handling. Network behavior is mocked in these checks; the bundled snapshot itself was fetched from the live public GitHub API. The globe's desktop appearance, selected project panel, and drag rotation were also checked in the browser at 1920×1080 and 1280×800.
 
 Markdown support is intentionally small; raw HTML is escaped, remote images are not embedded, and advanced GitHub Markdown features such as tables are displayed as text. This first version has no AI chat or cross-device synchronization.

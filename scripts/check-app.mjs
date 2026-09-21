@@ -50,6 +50,10 @@ assert(fresh.run('graphNodes.every(n=>/^#([a-f0-9]{6})$/i.test(nodeColor(n,false
 assert(!source.includes('hsl('),'Graph must be grayscale, including node labels and edges');
 for(let i=0;i<180;i++)fresh.run('loop()');
 fresh.run('fitTarget();draw()');
+assert(fresh.run('graphNodes.every(n=>n.sx>=0&&n.sx<=width&&n.sy>=0&&n.sy<=height)'),'Perspective globe must fit the canvas');
+assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").every(e=>e.angle<1.3)'),'Files must stay within their project neighborhood');
+assert(fresh.run('graphEdges.filter(e=>nodesById.get(e.b).kind==="file").reduce((sum,e)=>sum+e.angle,0)/fileIndex.size<.4'),'Typical file connections should be short');
+fresh.run('var stablePositions=new Map(graphNodes.map(n=>[n.id,[n.wx,n.wy,n.wz]]))');
 assert(fresh.run('graphNodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y))'));
 assert(fresh.run('graphNodes.every(n=>n.x*view.k+width/2+view.x>=0&&n.x*view.k+width/2+view.x<=width)'));
 assert(fresh.run('graphNodes.every(n=>Math.hypot(n.wx,n.wy,n.wz)<=GLOBE_RADIUS+1e-8)'),'Every node belongs to the same globe');
@@ -78,7 +82,9 @@ assert.equal(fresh.run('pointers.size'),0);
 assert(fresh.persisted());
 fresh.element('showFiles').checked=false;fresh.run('graph()');
 assert.equal(fresh.run('graphNodes.filter(n=>n.kind==="file").length'),0);
+assert(fresh.run('graphNodes.filter(n=>n.kind==="repo").every(n=>JSON.stringify([n.wx,n.wy,n.wz])===JSON.stringify(stablePositions.get(n.id)))'),'Toggling files must not move project territories');
 fresh.element('showFiles').checked=true;fresh.run('graph()');
+assert(fresh.run('graphNodes.filter(n=>n.kind==="repo").every(n=>focusedEdges(n.id).size<=10)'),'Selection must not highlight hundreds of spokes');
 fresh.element('tag').value='Python';
 assert(fresh.run('visibleNotes().filter(n=>n.kind==="file").length')>0);
 
@@ -92,6 +98,11 @@ assert.equal(migrated.run('note("'+seed.projects[0].id+'").title'),'My CRM');
 assert.equal(migrated.run('note("personal").body'),'Keep this');
 assert.equal(migrated.run('db.notes.some(n=>n.id==="welcome")'),false);
 assert.equal(harness(migrated.persisted()).run('db.notes.length'),16);
+const incomplete={version:1,user:seed.user,seedVersion:seed.generated,notes:seed.projects.filter(p=>p.files.length),hiddenSeedIds:[]};
+assert.equal(incomplete.notes.length,13);
+assert.equal(harness(JSON.stringify(incomplete)).run('db.notes.filter(n=>n.kind==="repo").length'),15,'Repair missing empty projects even at the current seed version');
+incomplete.hiddenSeedIds=[seed.projects.find(p=>!p.files.length).id];
+assert.equal(harness(JSON.stringify(incomplete)).run('db.notes.filter(n=>n.kind==="repo").length'),14,'Preserve deliberate local removals');
 assert(harness(undefined,true).run('storageFailed'));
 assert(harness('invalid JSON').run('loadProblem.length')>0);
 
