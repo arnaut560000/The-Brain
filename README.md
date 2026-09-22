@@ -27,10 +27,10 @@ You can also open the HTML directly, but a local server gives browser storage a 
 
 - Black, white, and gray interface with a narrow sidebar and one spherical graph. All projects, folders, and files share the same globe; edges still represent their actual relationships.
 - The globe is a filled 3D volume with irregular folder neighborhoods, rather than evenly spaced dots on a hollow shell. Files stay close to their project and folders, with stable project positions when files are hidden or filters change.
-- A sparse set of real relationships connects the neighborhoods. Per-hub line limits prevent large folders from producing starbursts; selection reveals up to five nearby connections and emphasizes the project's files. No decorative nodes or invented relationships are added. The count includes all relationships, including lines omitted from the overview.
+- A sparse set of real relationships connects the neighborhoods. Per-hub line limits keep the overview readable; hovering reveals up to five nearby connections, while clicking reveals all connections for the selection. No decorative nodes or invented relationships are added. The count includes all relationships, including lines omitted from the overview.
 - Drag anywhere on the globe to rotate it. Scroll or pinch to zoom, and use **Fit globe** to recenter it. Arrow keys rotate; +/− zoom; F fits the view.
 - Depth shading distinguishes the front and back. Clicking a node or sidebar item rotates that item toward the front and opens its details. Your viewing angle is saved locally.
-- The selected node and its outline turn green. Selecting another node moves the green highlight to it; other nodes keep their grayscale styling.
+- Clicking a node turns it, its directly connected nodes, and their connecting lines green. Selecting a project or folder also highlights all its folders, files, and containment links. Selecting another node moves the highlight to that node's connections; unrelated nodes stay grayscale.
 - Optional **Auto-rotate** / **Pause rotation** controls. Rotation is off by default and stops when you begin interacting with the globe.
 - Markdown notes with headings, bullet lists, bold text, code blocks, web links, and `[[wiki links]]`.
 - Create a linked note by clicking an unresolved wiki link.

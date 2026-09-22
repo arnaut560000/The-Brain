@@ -138,8 +138,8 @@ const LANG_HUE={Python:205,JavaScript:48,TypeScript:215,PHP:268,HTML:18,CSS:190,
 function hueOf(name){if(!name)return null;if(LANG_HUE[name]!=null)return LANG_HUE[name];let h=7;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))%360;return h;}
 function lodFor(k){return $('showFiles').checked?2:k<.3?0:k<.85?1:2;}
 const SELECTED_NODE_COLOR='#4ade80';
-function nodeColor(n,active){
-  if(n.id===selected)return SELECTED_NODE_COLOR;
+function nodeColor(n,active,connected=false){
+  if(n.id===selected||connected)return SELECTED_NODE_COLOR;
   if(active)return '#ffffff';
   return n.kind==='file'?'#c4c4c4':n.kind==='dir'?'#b0b0b0':'#eeeeee';
 }
@@ -225,7 +225,7 @@ function graph(){
 }
 function legend(){
   $('legend').innerHTML='<span><i style="background:#eee;width:7px;height:7px"></i>Project</span><span><i style="background:#b0b0b0;width:5px;height:5px"></i>Folder</span><span><i style="background:#c4c4c4;width:3px;height:3px"></i>File</span>';
-  $('graphCount').title='All relationships are counted. A limited set is drawn to keep the globe readable; select or hover a node to reveal its nearby connections.';
+  $('graphCount').title='All relationships are counted. Click a node to reveal its connections in green, including folders and files within a selected project. Hover previews a few nearby connections.';
 }
 function timeBounds(){const ts=db.notes.filter(n=>n.kind==='repo'&&n.pushed).map(n=>Date.parse(n.pushed)).filter(Number.isFinite);return ts.length>1?[Math.min(...ts),Math.max(...ts)]:null;}
 function applyTime(quiet){
@@ -325,19 +325,31 @@ new ResizeObserver(resize).observe($('graphArea'));
 function screenPoint(p){const perspective=4/(4-p.z/GLOBE_RADIUS);return {sx:width/2+view.x+p.x*view.k*perspective,sy:height/2+view.y+p.y*view.k*perspective};}
 function projectGlobe(){for(const n of graphNodes){Object.assign(n,rotatePoint(n));Object.assign(n,screenPoint(n));n.depth=Math.max(0,Math.min(1,(n.z/GLOBE_RADIUS+1)/2));n.pr=(n.kind==='file'?1.7:n.kind==='dir'?2.1:n.kind==='repo'?4.3:2.4)*(.55+.55*n.depth)*Math.max(.8,Math.sqrt(view.k));}}
 function focusedEdges(id){return new Set(graphEdges.filter(e=>e.a===id||e.b===id).sort((a,b)=>a.length-b.length).slice(0,5));}
-function drawEdge(e,active,emphasis){
+function selectionConnections(id){
+  const nodes=new Set(),edges=new Set();if(!nodesById.has(id))return {nodes,edges};
+  nodes.add(id);
+  for(const e of graphEdges)if(e.a===id||e.b===id){edges.add(e);nodes.add(e.a);nodes.add(e.b);}
+  // Project/folder selection also follows its complete containment hierarchy.
+  const pending=[id],visited=new Set();
+  while(pending.length){const parent=pending.pop();if(visited.has(parent))continue;visited.add(parent);
+    if(!['repo','dir'].includes(nodesById.get(parent)?.kind))continue;
+    for(const e of graphEdges)if(e.tree&&e.a===parent){edges.add(e);nodes.add(e.b);pending.push(e.b);}
+  }
+  return {nodes,edges};
+}
+function drawEdge(e,active,emphasis,connected=false){
   const a=nodesById.get(e.a),b=nodesById.get(e.b),front=(a.depth+b.depth)/2;
   ctx.globalAlpha=Math.min(alphaOf(a),alphaOf(b))*emphasis*(active?.13+front*.16:.025+front*.13);
-  ctx.strokeStyle='#ffffff';ctx.lineWidth=active?.8:.55;ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+  ctx.strokeStyle=connected?SELECTED_NODE_COLOR:'#ffffff';ctx.lineWidth=active?.8:.55;ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
 }
 function draw(){
   ctx.clearRect(0,0,width,height);projectGlobe();
   if(!graphNodes.length){ctx.fillStyle='#999';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No matching notes or projects.',width/2,height/2);return;}
-  const focus=hover||selected,focusNode=nodesById.get(focus),root=focusNode&&(focusNode.kind==='repo'?focusNode.id:focusNode.repo||focusNode.parent),highlight=focusedEdges(focus);
+  const focus=selected||hover,focusNode=nodesById.get(focus),root=focusNode&&(focusNode.kind==='repo'?focusNode.id:focusNode.repo||focusNode.parent),highlight=focusedEdges(hover),connections=selectionConnections(selected);
   const belongs=n=>root&&(n.id===root||n.repo===root||n.parent===root);
-  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),active=highlight.has(e);if(!active&&!ambientEdges.has(e))continue;drawEdge(e,active,root&&!belongs(a)&&!belongs(b)?.7:1);}
+  for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),connected=connections.edges.has(e),active=connected||highlight.has(e);if(!active&&!ambientEdges.has(e))continue;drawEdge(e,active,connected?1:root&&!belongs(a)&&!belongs(b)?.7:1,connected);}
   const ordered=[...graphNodes].sort((a,b)=>a.z-b.z);
-  for(const n of ordered){const isSelected=n.id===selected,active=isSelected||n.id===hover;ctx.globalAlpha=isSelected?1:alphaOf(n)*(.18+.82*Math.pow(n.depth,1.3))*(root&&!belongs(n)&&!active?.78:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle=isSelected?SELECTED_NODE_COLOR:'#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
+  for(const n of ordered){const isSelected=n.id===selected,connected=connections.nodes.has(n.id),active=isSelected||n.id===hover;ctx.globalAlpha=isSelected?1:alphaOf(n)*(connected?.5+.5*n.depth:.18+.82*Math.pow(n.depth,1.3))*(root&&!belongs(n)&&!active&&!connected?.78:1);ctx.fillStyle=nodeColor(n,active||belongs(n),connected);ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle=connected?SELECTED_NODE_COLOR:'#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
   ctx.globalAlpha=1;ctx.font='12px system-ui';ctx.textAlign='center';const boxes=[];
   const labels=ordered.filter(n=>n.id===selected||n.id===hover||(n.kind==='repo'&&n.depth>.56)||(view.k>2&&n.depth>.85)).sort((a,b)=>(b.id===selected||b.id===hover?1:0)-(a.id===selected||a.id===hover?1:0)||b.depth-a.depth);
   for(const n of labels){if(alphaOf(n)<.2)continue;const active=n.id===selected||n.id===hover,title=n.kind==='file'?(n.path||n.title).split('/').pop():n.title,text=title.length>32?title.slice(0,30)+'…':title,w=ctx.measureText(text).width+8,x=n.sx-w/2,y=n.sy+n.pr+8;if(!active&&boxes.some(b=>x<b.x+b.w&&x+w>b.x&&y<b.y+15&&y+15>b.y))continue;boxes.push({x,y,w});ctx.fillStyle=active?'#fff':'#aaa';ctx.fillText(text,n.sx,y+10);}
