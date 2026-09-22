@@ -137,7 +137,9 @@ const GOLD=2.39996;
 const LANG_HUE={Python:205,JavaScript:48,TypeScript:215,PHP:268,HTML:18,CSS:190,SCSS:195,Java:28,Kotlin:280,'C#':155,'C++':232,C:225,Go:185,Rust:14,Ruby:352,Swift:22,Dart:196,Shell:125,PowerShell:212,Vue:150,Svelte:10,R:208,Lua:240};
 function hueOf(name){if(!name)return null;if(LANG_HUE[name]!=null)return LANG_HUE[name];let h=7;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))%360;return h;}
 function lodFor(k){return $('showFiles').checked?2:k<.3?0:k<.85?1:2;}
+const SELECTED_NODE_COLOR='#4ade80';
 function nodeColor(n,active){
+  if(n.id===selected)return SELECTED_NODE_COLOR;
   if(active)return '#ffffff';
   return n.kind==='file'?'#c4c4c4':n.kind==='dir'?'#b0b0b0':'#eeeeee';
 }
@@ -335,7 +337,7 @@ function draw(){
   const belongs=n=>root&&(n.id===root||n.repo===root||n.parent===root);
   for(const e of graphEdges){const a=nodesById.get(e.a),b=nodesById.get(e.b),active=highlight.has(e);if(!active&&!ambientEdges.has(e))continue;drawEdge(e,active,root&&!belongs(a)&&!belongs(b)?.7:1);}
   const ordered=[...graphNodes].sort((a,b)=>a.z-b.z);
-  for(const n of ordered){const active=n.id===selected||n.id===hover;ctx.globalAlpha=alphaOf(n)*(.18+.82*Math.pow(n.depth,1.3))*(root&&!belongs(n)&&!active?.78:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
+  for(const n of ordered){const isSelected=n.id===selected,active=isSelected||n.id===hover;ctx.globalAlpha=isSelected?1:alphaOf(n)*(.18+.82*Math.pow(n.depth,1.3))*(root&&!belongs(n)&&!active?.78:1);ctx.fillStyle=nodeColor(n,active||belongs(n));ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr,0,Math.PI*2);ctx.fill();if(active){ctx.globalAlpha=1;ctx.strokeStyle=isSelected?SELECTED_NODE_COLOR:'#ffffff88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.sx,n.sy,n.pr+4,0,Math.PI*2);ctx.stroke();}}
   ctx.globalAlpha=1;ctx.font='12px system-ui';ctx.textAlign='center';const boxes=[];
   const labels=ordered.filter(n=>n.id===selected||n.id===hover||(n.kind==='repo'&&n.depth>.56)||(view.k>2&&n.depth>.85)).sort((a,b)=>(b.id===selected||b.id===hover?1:0)-(a.id===selected||a.id===hover?1:0)||b.depth-a.depth);
   for(const n of labels){if(alphaOf(n)<.2)continue;const active=n.id===selected||n.id===hover,title=n.kind==='file'?(n.path||n.title).split('/').pop():n.title,text=title.length>32?title.slice(0,30)+'…':title,w=ctx.measureText(text).width+8,x=n.sx-w/2,y=n.sy+n.pr+8;if(!active&&boxes.some(b=>x<b.x+b.w&&x+w>b.x&&y<b.y+15&&y+15>b.y))continue;boxes.push({x,y,w});ctx.fillStyle=active?'#fff':'#aaa';ctx.fillText(text,n.sx,y+10);}

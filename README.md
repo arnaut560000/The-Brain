@@ -1,6 +1,6 @@
 # The Brain
 
-A self-contained second brain for your notes and public GitHub repositories, with a monochrome, rotatable 3D knowledge globe.
+A self-contained second brain for your notes and public GitHub repositories, with a dark, rotatable 3D knowledge globe and a green selection highlight.
 
 The app opens already populated with **all 15 public repositories owned by arnaut560000**, their available root READMEs, and **632 indexed file paths**. This bundled snapshot was collected on September 18, 2026. Empty repositories are included too.
 
@@ -30,6 +30,7 @@ You can also open the HTML directly, but a local server gives browser storage a 
 - A sparse set of real relationships connects the neighborhoods. Per-hub line limits prevent large folders from producing starbursts; selection reveals up to five nearby connections and emphasizes the project's files. No decorative nodes or invented relationships are added. The count includes all relationships, including lines omitted from the overview.
 - Drag anywhere on the globe to rotate it. Scroll or pinch to zoom, and use **Fit globe** to recenter it. Arrow keys rotate; +/− zoom; F fits the view.
 - Depth shading distinguishes the front and back. Clicking a node or sidebar item rotates that item toward the front and opens its details. Your viewing angle is saved locally.
+- The selected node and its outline turn green. Selecting another node moves the green highlight to it; other nodes keep their grayscale styling.
 - Optional **Auto-rotate** / **Pause rotation** controls. Rotation is off by default and stops when you begin interacting with the globe.
 - Markdown notes with headings, bullet lists, bold text, code blocks, web links, and `[[wiki links]]`.
 - Create a linked note by clicking an unresolved wiki link.
